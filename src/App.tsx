@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { StartScreen } from './components/StartScreen';
-import { QuestionScreen } from './components/QuestionScreen';
+import { GameScreen } from './components/GameScreen';
 import { ResultsScreen } from './components/ResultsScreen';
 import { mbtiQuestions } from './data/questions';
 import { personalityTypes } from './data/personalities';
@@ -30,7 +30,8 @@ function App() {
     setSessionId(generateSessionId());
   }, []);
 
-  const handleStart = () => {
+  const handleStart = (age: number) => {
+    console.log('User age:', age); // TODO: Store age for AI analysis
     setScreen('question');
     setCurrentQuestionIndex(0);
     setScores({
@@ -98,7 +99,7 @@ function App() {
       {screen === 'start' && <StartScreen onStart={handleStart} />}
 
       {screen === 'question' && (
-        <QuestionScreen
+        <GameScreen
           question={mbtiQuestions[currentQuestionIndex]}
           currentQuestion={currentQuestionIndex + 1}
           totalQuestions={mbtiQuestions.length}
