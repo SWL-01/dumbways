@@ -62,7 +62,7 @@ export function StartScreen({ onStart, selectedVoiceId, onVoiceSelect }: StartSc
             Answer 4 scenarios to discover your unique personality type!
           </p>
           <TextToSpeech 
-            text="Answer 12 scenarios to discover your unique personality type!"
+            text="Answer 4 scenarios to discover your unique personality type!"
             voiceId={selectedVoiceId}
             className="ml-2"
           />
