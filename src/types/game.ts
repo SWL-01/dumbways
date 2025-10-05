@@ -11,6 +11,15 @@ export interface GameObject {
   characterImage?: string; // Character portrait for dialogue interactions (if this object represents a character)
 }
 
+// Invisible collision object for realistic boundaries
+export interface CollisionObject {
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+  name?: string; // Optional name for debugging
+}
+
 // Player configuration
 export interface PlayerConfig {
   startX: number;
@@ -45,6 +54,7 @@ export interface SceneConfig {
   npcScale?: number; // Scale for NPC sprite (default: 0.15 for custom images)
   characterImage?: string; // Character portrait for dialogue (visual novel style)
   objects: GameObject[];
+  collisionObjects?: CollisionObject[]; // Invisible collision boundaries for realistic game design
   playerConfig?: Partial<PlayerConfig>;
 }
 

@@ -225,6 +225,34 @@ export function BaseGameScreen({
       rightWall.refreshBody();
       rightWall.setVisible(false);
 
+      // Create custom invisible collision objects for realistic boundaries
+      if (sceneConfig.collisionObjects && sceneConfig.collisionObjects.length > 0) {
+        sceneConfig.collisionObjects.forEach((collision) => {
+          const collisionBox = boundaries.create(
+            collision.x,
+            collision.y,
+            'wall'
+          );
+          collisionBox.setDisplaySize(collision.width, collision.height);
+          collisionBox.refreshBody();
+          collisionBox.setVisible(false);
+          
+          // Debug: Draw border/outline for collision boxes
+          const debugMode = false;
+          if (debugMode) {
+            const borderGraphics = this.add.graphics();
+            borderGraphics.lineStyle(2, 0xff0000, 1);
+            borderGraphics.strokeRect(
+              collision.x - collision.width / 2,
+              collision.y - collision.height / 2,
+              collision.width,
+              collision.height
+            );
+            borderGraphics.setDepth(9999);
+          }
+        });
+      }
+
       // Create interactive objects
       sceneConfig.objects.forEach((objConfig, index) => {
         const textureKey = objConfig.image ? `object_${index}` : 'object';
@@ -286,7 +314,6 @@ export function BaseGameScreen({
       });
       npcLabel.setOrigin(0.5);
 
-      // Create player
       player = this.physics.add.sprite(
         playerConfig.startX,
         playerConfig.startY,
