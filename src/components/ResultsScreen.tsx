@@ -104,13 +104,23 @@ export function ResultsScreen({ personality, scores, onRestart }: ResultsScreenP
         {/* AI Result Section */}
         {aiResult && (
           <div className="bg-white rounded-xl p-6 mt-6 shadow-lg animate-slideIn">
-            <h3 className="text-xl font-bold mb-4"> Personality Insights From Gemini </h3>
-            {Object.entries(aiResult).map(([title, content]) => (
-              <div key={title} className="mb-4">
-                <h4 className="text-lg font-semibold text-purple-600 mb-1">{title}</h4>
-                <p className="text-gray-700">{content}</p>
-              </div>
-            ))}
+            <h3 className="text-xl font-bold mb-4">Personality Insights From Gemini</h3>
+
+            {(() => {
+              const labelMap: Record<string, string> = {
+                Personality_info: 'About Your Personality',
+                age_info: 'Your Age and Personality',
+                careers: 'Most Suitable Careers',
+              };
+              return Object.entries(aiResult).map(([key, content]) => (
+                <div key={key} className="mb-4">
+                  <h4 className="text-lg font-semibold text-purple-600 mb-1">
+                    {labelMap[key] ?? key}
+                  </h4>
+                  <p className="text-gray-700">{content}</p>
+                </div>
+              ));
+            })()}
           </div>
         )}
 
@@ -158,7 +168,7 @@ export function ResultsScreen({ personality, scores, onRestart }: ResultsScreenP
 
           <button
             onClick={onRestart}
-            className="bg-gradient-to-r from-purple-500 to-pink-500 text-white px-8 py-4 rounded-full text-xl font-bold hover:from-purple-600 hover:to-pink-600 transform hover:scale-105 transition-all duration-300 shadow-lg"
+            className="bg-purple-600 text-white px-8 py-4 rounded-full text-xl font-bold hover:bg-purple-700 transform hover:scale-105 transition-all duration-300 shadow-lg"
           >
             Take Again
           </button>
