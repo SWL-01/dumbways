@@ -11,6 +11,11 @@ export const partySceneConfig: SceneConfig = {
     startX: 200, 
     startY: 600,
   },
+  collisionObjects: [
+    { x: 680, y: 400, width: 1500, height: 80 },
+    { x: 80, y: 550, width: 150, height: 200 },
+    { x: 680, y: 600, width: 350, height: 80 },
+  ],
   objects: [
     { 
       x: 680, 
@@ -50,6 +55,12 @@ export const officeSceneConfig: SceneConfig = {
     startX: 120,
     startY: 280,
   },
+  collisionObjects: [
+    { x: 680, y: 380, width: 960, height: 100 },
+    { x: 800, y: 150, width: 850, height: 120 },
+    { x: 120, y: 580, width: 60, height: 120 },
+    { x: 620, y: 650, width: 350, height: 80 },
+  ],
   objects: [
     { 
       x: 350, 
@@ -69,6 +80,13 @@ export const classroomSceneConfig: SceneConfig = {
   npcImage: '/assets/characters/sillygirl.png',
   npcScale: 0.25,
   characterImage: '/assets/characters/sillygirl.png',
+  collisionObjects: [
+    { x: 350, y: 550, width: 120, height: 180 },
+    { x: 570, y: 550, width: 120, height: 180 },
+    { x: 810, y: 550, width: 120, height: 180 },
+    { x: 1050, y: 550, width: 120, height: 180 },
+    { x: 700, y: 300, width: 250, height: 80 },
+  ],
   objects: [
     { 
       x: 300, 
@@ -96,6 +114,15 @@ export const coffeeShopSceneConfig: SceneConfig = {
   npcImage: '/assets/characters/girlfriend.png',
   npcScale: 0.3,
   characterImage: '/assets/characters/girlfriend.png',
+  playerConfig: {
+    startX: 445,
+    startY: 570,
+  },
+  collisionObjects: [
+    { x: 470, y: 420, width: 500, height: 60 },
+    { x: 320, y: 540, width: 70, height: 40 },
+    { x: 680, y: 500, width: 250, height: 40 },
+  ],
   objects: [
     { 
       x: 445, 
