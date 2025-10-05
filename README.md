@@ -183,19 +183,6 @@ The serverless function at `/api/gemini.ts` will automatically handle production
 - Accessible audio controls
 - Voice selection persists across sessions
 
-## 🤝 Contributing
-
-This project was created for StormHacks 2025. Feel free to fork and adapt for your own use!
-
-## 📝 License
-
-This project is open source and available under the MIT License.
-
-## 🏆 Hackathon
-
-**StormHacks 2025 @ Simon Fraser University**  
-[View on Devpost](https://stormhacks2025.devpost.com/)
-
 ## 👥 Team
 - Ernest @jumiknows
 - Cullen @cullendales
@@ -209,5 +196,3 @@ This project is open source and available under the MIT License.
 - StormHacks organizers for hosting an amazing event
 
 ---
-
-**🎮 Ready to discover your path? [Play PathQuest Now!](https://pathquest-ten.vercel.app/)**
