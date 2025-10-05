@@ -29,34 +29,34 @@ export const mbtiQuestions: MBTIQuestion[] = [
     animation: "planning"
     , voice: "party"
   },
-  // {
-  //   id: 3,
-  //   scenario: "You need to solve a problem at work...",
-  //   optionA: {
-  //     text: "Look at the facts and data first",
-  //     dimension: 'T'
-  //   },
-  //   optionB: {
-  //     text: "Consider how it affects people's feelings",
-  //     dimension: 'F'
-  //   },
-  //   animation: "problem"
-  //   , voice: "party"}
-  // ,
-  // {
-  //   id: 4,
-  //   scenario: "Someone tells you about their amazing weekend...",
-  //   optionA: {
-  //     text: "Ask for specific details about what they did",
-  //     dimension: 'S'
-  //   },
-  //   optionB: {
-  //     text: "Imagine the bigger picture and what it meant to them",
-  //     dimension: 'N'
-  //   },
-  //   animation: "listening"
-  //   , voice: "party"}
-  // ,
+  {
+    id: 3,
+    scenario: "Hey, it doesn't seem like you studied hard, but you got a good grade. Maybe you're just talented? ... what will you answer it?",
+    optionA: {
+      text: "Am I a genius? Being called talented feels good.",
+      dimension: 'T'
+    },
+    optionB: {
+      text: "Why are you downplaying my effort? I really did study hard.",
+      dimension: 'F'
+    },
+    animation: "problem"
+    , voice: "party"}
+  ,
+  {
+    id: 4,
+    scenario: "What if you won the lottery tomorrow? ... what will you answer it?",
+    optionA: {
+      text: "It never happens to me, but I guess I'd focus on practical uses like savings",
+      dimension: 'S'
+    },
+    optionB: {
+      text: "Wow, that would be amazing! I would buy a house by the sea and travel the world",
+      dimension: 'N'
+    },
+    animation: "listening"
+    , voice: "party"}
+  ,
   // {
   //   id: 5,
   //   scenario: "It's Friday night after a long week...",
