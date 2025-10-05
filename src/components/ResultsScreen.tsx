@@ -90,10 +90,14 @@ export function ResultsScreen({ personality, scores, onRestart }: ResultsScreenP
           ? '/api/gemini'  // Production: use relative path (Vercel serverless function)
           : 'http://localhost:4000/api/gemini';  // Development: use local server
         
+        // Get stored age from StartScreen (fallback to 25 if not found)
+        const storedAge = localStorage.getItem('user_age');
+        const userAge = storedAge ? parseInt(storedAge) : 25;
+        
         const res = await fetch(apiUrl, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ personality_type: type, age: 25 }),
+          body: JSON.stringify({ personality_type: type, age: userAge }),
         });
         if (!res.ok) throw new Error('Failed to fetch AI result');
         const data = await res.json();
