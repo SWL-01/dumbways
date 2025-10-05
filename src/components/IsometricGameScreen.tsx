@@ -8,6 +8,7 @@ interface IsometricGameScreenProps {
   currentQuestion: number;
   totalQuestions: number;
   onAnswer: (dimension: 'E' | 'I' | 'S' | 'N' | 'T' | 'F' | 'J' | 'P') => void;
+  voiceId?: string;
 }
 
 // Scene configurations for each scenario type
@@ -133,6 +134,7 @@ export function IsometricGameScreen({
   currentQuestion,
   totalQuestions,
   onAnswer,
+  voiceId,
 }: IsometricGameScreenProps) {
   const gameContainerRef = useRef<HTMLDivElement>(null);
   const phaserGameRef = useRef<Phaser.Game | null>(null);
@@ -542,6 +544,7 @@ export function IsometricGameScreen({
                 { text: question.optionB.text, key: 'B' as const },
               ]}
               onSelect={handleDialogueChoice}
+              voiceId={voiceId}
             />
           </div>
         </div>

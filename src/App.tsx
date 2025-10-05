@@ -125,6 +125,7 @@ function App() {
           currentQuestion={currentQuestionIndex + 1}
           totalQuestions={mbtiQuestions.length}
           onAnswer={handleAnswer}
+          voiceId={selectedVoiceId}
         />
       )}
 
@@ -140,6 +141,7 @@ function App() {
           personality={personalityTypes[personalityType]}
           scores={scores}
           onRestart={handleRestart}
+          voiceId={selectedVoiceId}
         />
       )}
     </>

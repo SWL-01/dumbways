@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { TextToSpeech } from './TextToSpeech';
 
 interface DialogueBoxProps {
   scenario: string;
@@ -8,9 +9,10 @@ interface DialogueBoxProps {
   }>;
   onSelect: (key: 'A' | 'B') => void;
   npcName?: string;
+  voiceId?: string;
 }
 
-export function DialogueBox({ scenario, options, onSelect, npcName = 'Stranger' }: DialogueBoxProps) {
+export function DialogueBox({ scenario, options, onSelect, npcName = 'Stranger', voiceId }: DialogueBoxProps) {
   const [selectedOption, setSelectedOption] = useState<'A' | 'B' | null>(null);
 
   const handleSelect = (key: 'A' | 'B') => {
@@ -34,7 +36,16 @@ export function DialogueBox({ scenario, options, onSelect, npcName = 'Stranger' 
                 </div>
               </div>
               <div className="flex-1">
-                <div className="font-bold text-gray-800 mb-2">{npcName}</div>
+                <div className="flex items-center justify-between mb-2">
+                  <div className="font-bold text-gray-800">{npcName}</div>
+                  {voiceId && (
+                    <TextToSpeech
+                      text={scenario}
+                      voiceId={voiceId}
+                      className="ml-2"
+                    />
+                  )}
+                </div>
                 <p className="text-xl md:text-2xl text-gray-700 leading-relaxed">{scenario}</p>
               </div>
             </div>
