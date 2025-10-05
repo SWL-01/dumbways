@@ -45,4 +45,63 @@
   .animate-wiggle {
     animation: wiggle 1s ease-in-out infinite;
   }
+
+  /* Loading Screen Styles */
+  .loading-screen {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: #000000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10000;
+    font-family: 'Courier New', monospace;
+  }
+
+  .loading-content {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    color: white;
+    font-size: 24px;
+    letter-spacing: 2px;
+  }
+
+  .loading-text {
+    font-weight: normal;
+  }
+
+  .loading-dots {
+    display: flex;
+  }
+
+  .dot {
+    animation: blink 1.5s infinite;
+    opacity: 0.3;
+  }
+
+  .dot-1 {
+    animation-delay: 0s;
+  }
+
+  .dot-2 {
+    animation-delay: 0.3s;
+  }
+
+  .dot-3 {
+    animation-delay: 0.6s;
+  }
+
+  .loading-progress {
+    font-size: 20px;
+    margin-left: 10px;
+  }
+
+  @keyframes blink {
+    0%, 50% { opacity: 0.3; }
+    51%, 100% { opacity: 1; }
+  }
 }
