@@ -45,7 +45,8 @@ export function ResultsScreen({ personality, scores, onRestart }: ResultsScreenP
   useEffect(() => {
     async function loadAI() {
       try {
-        // Hardcoded AI response for testing
+        // Hardcoded AI response for testing (commented out)
+        /*
         setAiResult({
           Personality_info:
             "About Your Personality\nISFJ stands for Introversion, Sensing, Feeling, and Judging. Individuals with this personality type are often called 'The Defender' or 'The Protector'. They are characterized by their warm-hearted, responsible, and reserved nature. ISFJs are deeply committed to their duties and responsibilities, often putting the needs of others before their own. They are practical, grounded in reality, and pay close attention to details, making them reliable and meticulous. Their strong sense of duty is coupled with a rich inner world of empathy and compassion. They are observant of others' feelings and strive to create harmonious environments, often acting as quiet pillars of support within their communities and families. While they may not always express their feelings openly, their actions speak volumes about their care and dedication. They value tradition, stability, and security, and are known for their loyalty and patience.",
@@ -54,16 +55,16 @@ export function ResultsScreen({ personality, scores, onRestart }: ResultsScreenP
           careers:
             "Nursing, Teaching, Social Work, Counseling, Librarian, Administrative Assistant, Human Resources, Medical Assistant, Child Care Provider, Religious Worker, Accountant, Dental Hygienist, Physical Therapist, Interior Designer, Executive Assistant"
         });
+        */
 
-        // For real API testing, uncomment the block below and remove the hardcoded setAiResult above.
-        /*
+        // Real API call (uncommented)
         const res = await fetch('http://localhost:4000/api/gemini', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ personality_type: type, age: 25 }),
         });
         if (!res.ok) throw new Error('Failed to fetch AI result');
-        const data = await res.json(); 
+        const data = await res.json();
         if (Array.isArray(data) && data.length > 0) {
           const item = data[0];
           setAiResult({
@@ -71,8 +72,9 @@ export function ResultsScreen({ personality, scores, onRestart }: ResultsScreenP
             age_info: Array.isArray(item.age_info) ? item.age_info.join(' ') : (item.age_info ?? ''),
             careers: Array.isArray(item.careers) ? item.careers.join(', ') : (item.careers ?? '')
           });
+        } else {
+          setAiResult({ Personality_info: 'No AI response', age_info: '', careers: '' });
         }
-        */
       } catch (err) {
         console.error('AI fetch error', err);
       }
