@@ -17,7 +17,7 @@ export const mbtiQuestions: MBTIQuestion[] = [
   },
   {
     id: 2,
-    scenario: "Can you make a plan for the company retreat? ... what will you answer it?",
+    scenario: "Can you make a plan for the company retreat? ... How would you answer?",
     optionA: {
       text: "I will create a detailed schedule with backup plans",
       dimension: 'J'
@@ -31,7 +31,7 @@ export const mbtiQuestions: MBTIQuestion[] = [
   },
   {
     id: 3,
-    scenario: "Hey, it doesn't seem like you studied hard, but you got a good grade. Maybe you're just talented? ... what will you answer it?",
+    scenario: "Hey, it doesn't seem like you studied hard, but you got a good grade. Maybe you're just talented? ... How would you answer?",
     optionA: {
       text: "Am I a genius? Being called talented feels good.",
       dimension: 'T'
@@ -45,7 +45,7 @@ export const mbtiQuestions: MBTIQuestion[] = [
   ,
   {
     id: 4,
-    scenario: "What if you won the lottery tomorrow? ... what will you answer it?",
+    scenario: "What if you won the lottery tomorrow? ... How would you answer?",
     optionA: {
       text: "It never happens to me, but I guess I'd focus on practical uses like savings",
       dimension: 'S'
