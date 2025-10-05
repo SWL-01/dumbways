@@ -13,6 +13,7 @@ export const mbtiQuestions: MBTIQuestion[] = [
       dimension: 'I'
     },
     animation: "party"
+    , voice: "party"
   },
   {
     id: 2,
@@ -26,6 +27,7 @@ export const mbtiQuestions: MBTIQuestion[] = [
       dimension: 'P'
     },
     animation: "planning"
+    , voice: "party"
   },
   {
     id: 3,
@@ -39,7 +41,8 @@ export const mbtiQuestions: MBTIQuestion[] = [
       dimension: 'F'
     },
     animation: "problem"
-  },
+    , voice: "party"}
+  ,
   {
     id: 4,
     scenario: "Someone tells you about their amazing weekend...",
@@ -52,7 +55,8 @@ export const mbtiQuestions: MBTIQuestion[] = [
       dimension: 'N'
     },
     animation: "listening"
-  },
+    , voice: "party"}
+  ,
   {
     id: 5,
     scenario: "It's Friday night after a long week...",
@@ -65,7 +69,8 @@ export const mbtiQuestions: MBTIQuestion[] = [
       dimension: 'I'
     },
     animation: "weekend"
-  },
+    , voice: "party"}
+  ,
   {
     id: 6,
     scenario: "You're reading a book and...",
@@ -78,7 +83,8 @@ export const mbtiQuestions: MBTIQuestion[] = [
       dimension: 'N'
     },
     animation: "reading"
-  },
+    , voice: "party"}
+  ,
   {
     id: 7,
     scenario: "Your friend is upset and comes to you...",
@@ -91,7 +97,8 @@ export const mbtiQuestions: MBTIQuestion[] = [
       dimension: 'F'
     },
     animation: "comfort"
-  },
+    , voice: "party"}
+  ,
   {
     id: 8,
     scenario: "You're planning a vacation...",
@@ -104,7 +111,8 @@ export const mbtiQuestions: MBTIQuestion[] = [
       dimension: 'P'
     },
     animation: "vacation"
-  },
+    , voice: "party"}
+  ,
   {
     id: 9,
     scenario: "At a group project meeting...",
@@ -117,7 +125,8 @@ export const mbtiQuestions: MBTIQuestion[] = [
       dimension: 'I'
     },
     animation: "meeting"
-  },
+    , voice: "party"}
+  ,
   {
     id: 10,
     scenario: "You're learning something new...",
@@ -130,7 +139,8 @@ export const mbtiQuestions: MBTIQuestion[] = [
       dimension: 'N'
     },
     animation: "learning"
-  },
+    , voice: "party"}
+  ,
   {
     id: 11,
     scenario: "Someone criticizes your work...",
@@ -143,7 +153,8 @@ export const mbtiQuestions: MBTIQuestion[] = [
       dimension: 'F'
     },
     animation: "criticism"
-  },
+    , voice: "party"}
+  ,
   {
     id: 12,
     scenario: "Your room is getting messy...",
@@ -156,5 +167,6 @@ export const mbtiQuestions: MBTIQuestion[] = [
       dimension: 'P'
     },
     animation: "mess"
+    , voice: "party"
   }
 ];
