@@ -99,7 +99,7 @@ export function BaseGameScreen({
           frameWidth: playerConfig.frameWidth,
           frameHeight: playerConfig.frameHeight,
         });
-      } catch (e) {
+      } catch {
         // Fallback to colored square
         const graphics = this.add.graphics();
         graphics.fillStyle(0x4a9eff, 1);
@@ -156,7 +156,7 @@ export function BaseGameScreen({
           'background'
         );
         bgImage.setDisplaySize(DEFAULT_GAME_DIMENSIONS.width, DEFAULT_GAME_DIMENSIONS.height);
-      } catch (e) {
+      } catch {
         console.log('Background image not loaded, using fallback');
       }
 

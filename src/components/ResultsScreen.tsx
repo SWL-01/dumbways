@@ -1,9 +1,9 @@
 import { useState, useEffect } from 'react';
-import { Award, TrendingUp, Share2 } from 'lucide-react';
+import { Share2, TrendingUp } from 'lucide-react';
 import { PersonalityType } from '../types/mbti';
 import { getPercentages } from '../utils/mbtiCalculator';
 import { MBTIScores } from '../types/mbti';
-import { TextToSpeech } from './TextToSpeech';
+import { CareerCounselor } from './CareerCounselor';
 
 interface ResultsScreenProps {
   personality: PersonalityType;
@@ -26,10 +26,38 @@ export function ResultsScreen({ personality, scores, onRestart }: ResultsScreenP
   const bgPath = `/images/${imageKey}.png`;
 
   const dimensions = [
-    { left: 'E', right: 'I', leftPercent: percentages.E, rightPercent: percentages.I },
-    { left: 'S', right: 'N', leftPercent: percentages.S, rightPercent: percentages.N },
-    { left: 'T', right: 'F', leftPercent: percentages.T, rightPercent: percentages.F },
-    { left: 'J', right: 'P', leftPercent: percentages.J, rightPercent: percentages.P },
+    { 
+      left: 'E', 
+      right: 'I', 
+      leftPercent: percentages.E, 
+      rightPercent: percentages.I,
+      dominant: percentages.E >= percentages.I ? 'left' : 'right',
+      dominantPercent: Math.max(percentages.E, percentages.I)
+    },
+    { 
+      left: 'S', 
+      right: 'N', 
+      leftPercent: percentages.S, 
+      rightPercent: percentages.N,
+      dominant: percentages.S >= percentages.N ? 'left' : 'right',
+      dominantPercent: Math.max(percentages.S, percentages.N)
+    },
+    { 
+      left: 'T', 
+      right: 'F', 
+      leftPercent: percentages.T, 
+      rightPercent: percentages.F,
+      dominant: percentages.T >= percentages.F ? 'left' : 'right',
+      dominantPercent: Math.max(percentages.T, percentages.F)
+    },
+    { 
+      left: 'J', 
+      right: 'P', 
+      leftPercent: percentages.J, 
+      rightPercent: percentages.P,
+      dominant: percentages.J >= percentages.P ? 'left' : 'right',
+      dominantPercent: Math.max(percentages.J, percentages.P)
+    },
   ];
 
   const handleShare = () => {
@@ -84,12 +112,12 @@ export function ResultsScreen({ personality, scores, onRestart }: ResultsScreenP
 
   return (
     <div
-      className="min-h-screen relative bg-cover bg-center py-8 px-4"
+      className="min-h-screen relative bg-cover bg-center py-8 px-4 sm:px-6 lg:px-8"
       style={{ backgroundImage: `url('${bgPath}')` }}
     >
       {/* absolute overlay behind content */}
       <div className="absolute inset-0 bg-black/30 pointer-events-none" />
-      <div className="relative max-w-4xl mx-auto">
+      <div className="relative max-w-4xl mx-auto pb-8">
         {/* Header Section */}
         <div className="text-center mb-8 animate-fadeIn">
           <h1 className="text-6xl md:text-8xl font-black text-white mb-4 drop-shadow-lg">
@@ -125,39 +153,99 @@ export function ResultsScreen({ personality, scores, onRestart }: ResultsScreenP
         )}
 
         {/* Scores Section */}
-        <div className="mb-8 mt-8">
-          <div className="flex items-center gap-3 mb-4">
+        <div className="mb-12 mt-8">
+          <div className="flex items-center gap-3 mb-6">
             <TrendingUp className="w-8 h-8 text-purple-600" />
-            <h3 className="text-2xl font-bold text-white">Your Scores</h3>
+            <h3 className="text-2xl font-bold text-white drop-shadow">Your Personality Breakdown</h3>
           </div>
-          <div className="space-y-4">
-            {dimensions.map((dim, idx) => (
-              <div key={idx} className="bg-gray-50 rounded-xl p-4">
-                <div className="flex justify-between mb-2">
-                  <span className="font-bold text-purple-600">{dim.left}</span>
-                  <span className="font-bold text-pink-600">{dim.right}</span>
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            {dimensions.map((dim, index) => {
+              const dimensionLabels = {
+                'E': { full: 'Extraverted', desc: 'Energized by people and external world' },
+                'I': { full: 'Introverted', desc: 'Energized by solitude and inner world' },
+                'S': { full: 'Sensing', desc: 'Focused on details and present reality' },
+                'N': { full: 'Intuitive', desc: 'Focused on patterns and future possibilities' },
+                'T': { full: 'Thinking', desc: 'Makes decisions based on logic' },
+                'F': { full: 'Feeling', desc: 'Makes decisions based on values' },
+                'J': { full: 'Judging', desc: 'Prefers structure and closure' },
+                'P': { full: 'Perceiving', desc: 'Prefers flexibility and adaptability' },
+              };
+
+              const leftLabel = dimensionLabels[dim.left as keyof typeof dimensionLabels];
+              const rightLabel = dimensionLabels[dim.right as keyof typeof dimensionLabels];
+              const strongerSide = dim.dominant === 'left' ? leftLabel : rightLabel;
+              const strongerPercent = dim.dominant === 'left' ? dim.leftPercent : dim.rightPercent;
+
+              return (
+                <div key={index} className="bg-white/95 backdrop-blur-sm rounded-2xl p-6 shadow-xl border border-white/20">
+                  {/* Header with dominant trait */}
+                  <div className="text-center mb-4">
+                    <div className="text-2xl font-bold text-purple-600 mb-1">
+                      {strongerPercent}% {strongerSide.full}
+                    </div>
+                    <div className="text-sm text-gray-600">
+                      {strongerSide.desc}
+                    </div>
+                  </div>
+
+                  {/* Visual comparison */}
+                  <div className="space-y-3">
+                    <div className="flex justify-between text-sm font-medium">
+                      <span className={dim.dominant === 'left' ? 'text-purple-600' : 'text-gray-500'}>
+                        {dim.left} - {leftLabel.full}
+                      </span>
+                      <span className={dim.dominant === 'right' ? 'text-purple-600' : 'text-gray-500'}>
+                        {rightLabel.full} - {dim.right}
+                      </span>
+                    </div>
+
+                    {/* Centered progress bar */}
+                    <div className="relative h-6 bg-gray-200 rounded-full overflow-hidden">
+                      {/* Left side bar */}
+                      <div 
+                        className={`absolute left-0 top-0 h-full rounded-l-full transition-all duration-1000 ease-out ${
+                          dim.leftPercent >= 50 ? 'bg-gradient-to-r from-purple-500 to-blue-500' : 'bg-gray-300'
+                        }`}
+                        style={{ width: `${Math.min(dim.leftPercent, 50)}%` }}
+                      />
+                      {/* Right side bar */}
+                      <div 
+                        className={`absolute right-0 top-0 h-full rounded-r-full transition-all duration-1000 ease-out ${
+                          dim.rightPercent >= 50 ? 'bg-gradient-to-l from-purple-500 to-blue-500' : 'bg-gray-300'
+                        }`}
+                        style={{ width: `${Math.min(dim.rightPercent, 50)}%` }}
+                      />
+                      {/* Center line */}
+                      <div className="absolute left-1/2 top-0 h-full w-0.5 bg-white transform -translate-x-0.5" />
+                    </div>
+
+                    {/* Percentages */}
+                    <div className="flex justify-between text-sm">
+                      <span className={`font-semibold ${dim.dominant === 'left' ? 'text-purple-600' : 'text-gray-500'}`}>
+                        {dim.leftPercent}%
+                      </span>
+                      <span className={`font-semibold ${dim.dominant === 'right' ? 'text-purple-600' : 'text-gray-500'}`}>
+                        {dim.rightPercent}%
+                      </span>
+                    </div>
+                  </div>
                 </div>
-                <div className="relative h-8 bg-gray-200 rounded-full overflow-hidden">
-                  <div
-                    className="absolute left-0 h-full bg-gradient-to-r from-purple-500 to-purple-600 transition-all duration-1000"
-                    style={{ width: `${dim.leftPercent}%` }}
-                  />
-                  <div
-                    className="absolute right-0 h-full bg-gradient-to-l from-pink-500 to-pink-600 transition-all duration-1000"
-                    style={{ width: `${dim.rightPercent}%` }}
-                  />
-                </div>
-                <div className="flex justify-between mt-1 text-sm text-gray-600">
-                  <span>{dim.leftPercent}%</span>
-                  <span>{dim.rightPercent}%</span>
-                </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </div>
 
+        {/* Career Counselor Section */}
+        <div className="mt-12 mb-12 animate-fadeIn">
+          <CareerCounselor 
+            personality={personality} 
+            scores={scores}
+            aiResult={aiResult} 
+          />
+        </div>
+
         {/* Buttons */}
-        <div className="flex flex-col sm:flex-row gap-4 justify-center animate-fadeIn">
+        <div className="flex flex-col sm:flex-row gap-4 justify-center animate-fadeIn pb-8">
           <button
             onClick={handleShare}
             className="bg-white text-purple-600 px-8 py-4 rounded-full text-xl font-bold hover:bg-gray-100 transform hover:scale-105 transition-all duration-300 shadow-lg flex items-center justify-center gap-2"
