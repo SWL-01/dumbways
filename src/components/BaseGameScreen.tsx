@@ -34,6 +34,10 @@ export function BaseGameScreen({
   const [showObjectInteraction, setShowObjectInteraction] = useState(false);
   const [objectInteractionText, setObjectInteractionText] = useState('');
   const [interactedObjectName, setInteractedObjectName] = useState('');
+  
+  // Refs to track dialogue states for Phaser to access current values
+  const showDialogueRef = useRef(false);
+  const showObjectInteractionRef = useRef(false);
 
   useEffect(() => {
     if (!gameContainerRef.current) return;
@@ -97,18 +101,26 @@ export function BaseGameScreen({
         graphics.destroy();
       }
 
-      // NPC sprite (orange)
-      const graphics = this.add.graphics();
-      graphics.fillStyle(0xff9d4a, 1);
-      graphics.fillRect(0, 0, 24, 36);
-      graphics.generateTexture('npc', 24, 36);
-      graphics.clear();
+      // Load NPC sprite
+      if (sceneConfig.npcImage) {
+        this.load.image('npc', sceneConfig.npcImage);
+      } else {
+        // Fallback NPC sprite (orange)
+        const npcGraphics = this.add.graphics();
+        npcGraphics.fillStyle(0xff9d4a, 1);
+        npcGraphics.fillRect(0, 0, 24, 36);
+        npcGraphics.generateTexture('npc', 24, 36);
+        npcGraphics.clear();
+        npcGraphics.destroy();
+      }
 
       // Interactive objects - default texture
-      graphics.fillStyle(0x4aff9d, 1);
-      graphics.fillRect(0, 0, 30, 30);
-      graphics.generateTexture('object', 30, 30);
-      graphics.clear();
+      const objGraphics = this.add.graphics();
+      objGraphics.fillStyle(0x4aff9d, 1);
+      objGraphics.fillRect(0, 0, 30, 30);
+      objGraphics.generateTexture('object', 30, 30);
+      objGraphics.clear();
+      objGraphics.destroy();
 
       // Load object images from scene config
       sceneConfig.objects.forEach((objConfig, index) => {
@@ -116,8 +128,6 @@ export function BaseGameScreen({
           this.load.image(`object_${index}`, objConfig.image);
         }
       });
-
-      graphics.destroy();
     }
 
     function create(this: Phaser.Scene) {
@@ -235,8 +245,7 @@ export function BaseGameScreen({
 
         interactiveObjects.push(obj);
 
-        // Add label
-        const label = this.add.text(objConfig.x, objConfig.y - 30, objConfig.name, {
+        const label = this.add.text(objConfig.x, objConfig.y - 80, objConfig.name, {
           fontSize: '12px',
           color: '#ffffff',
           backgroundColor: '#000000',
@@ -246,7 +255,6 @@ export function BaseGameScreen({
         label.setAlpha(0.7);
       });
 
-      // Create NPC
       npc = this.physics.add.sprite(
         sceneConfig.npcPosition.x,
         sceneConfig.npcPosition.y,
@@ -254,13 +262,18 @@ export function BaseGameScreen({
       );
       npc.setData('name', 'NPC');
       npc.setDepth(sceneConfig.npcPosition.y);
+      
+      // Scale NPC if custom image is used
+      if (sceneConfig.npcImage) {
+        npc.setScale(sceneConfig.npcScale || 0.15);
+      }
 
-      // Add NPC label
-      const npcLabel = this.add.text(npc.x, npc.y - 35, '❗ Talk', {
+      const npcLabel = this.add.text(npc.x, npc.y - 80, '❗ Talk', {
         fontSize: '14px',
         color: '#ffeb3b',
         backgroundColor: '#000000',
         padding: { x: 6, y: 3 },
+        
       });
       npcLabel.setOrigin(0.5);
 
@@ -289,6 +302,63 @@ export function BaseGameScreen({
         console.log('Player spritesheet loaded. Total frames:', texture.frameTotal);
       }
 
+      // Create walking animations for 8 directions
+      this.anims.create({
+        key: 'walk-down',
+        frames: this.anims.generateFrameNumbers(playerConfig.spriteKey, { frames: [0, 1, 2, 3] }),
+        frameRate: 8,
+        repeat: -1 // Loop forever
+      });
+
+      this.anims.create({
+        key: 'walk-up',
+        frames: this.anims.generateFrameNumbers(playerConfig.spriteKey, { frames: [8,9,10,11] }),
+        frameRate: 8,
+        repeat: -1
+      });
+
+      this.anims.create({
+        key: 'walk-right',
+        frames: this.anims.generateFrameNumbers(playerConfig.spriteKey, { frames: [4, 5, 6, 7] }),
+        frameRate: 8,
+        repeat: -1
+      });
+
+      this.anims.create({
+        key: 'walk-left',
+        frames: this.anims.generateFrameNumbers(playerConfig.spriteKey, { frames: [12, 13, 14, 15] }),
+        frameRate: 8,
+        repeat: -1
+      });
+
+      this.anims.create({
+        key: 'walk-down-right',
+        frames: this.anims.generateFrameNumbers(playerConfig.spriteKey, { frames: [0,1,2,3] }),
+        frameRate: 8,
+        repeat: -1
+      });
+
+      this.anims.create({
+        key: 'walk-down-left',
+        frames: this.anims.generateFrameNumbers(playerConfig.spriteKey, { frames: [0,1,2,3] }), 
+        frameRate: 8,
+        repeat: -1
+      });
+
+      this.anims.create({
+        key: 'walk-up-right',
+        frames: this.anims.generateFrameNumbers(playerConfig.spriteKey, { frames: [8,9,10,11] }),
+        frameRate: 8,
+        repeat: -1
+      });
+
+      this.anims.create({
+        key: 'walk-up-left',
+        frames: this.anims.generateFrameNumbers(playerConfig.spriteKey, { frames: [8,9,10,11] }),
+        frameRate: 8,
+        repeat: -1
+      });
+
       // Interaction prompt
       interactionPrompt = this.add.text(0, 0, 'Press E or SPACE', {
         fontSize: '16px',
@@ -307,8 +377,19 @@ export function BaseGameScreen({
       keyS = this.input.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.S);
       keyD = this.input.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.D);
 
-      // Keyboard interaction
+      // Keyboard interaction - E key toggles interaction
       this.input.keyboard!.on('keydown-E', () => {
+        // Close if dialogue or interaction is open
+        if (showDialogue) {
+          setShowDialogue(false);
+          return;
+        }
+        if (showObjectInteraction) {
+          setShowObjectInteraction(false);
+          return;
+        }
+        
+        // Open if near an interactive object
         if (nearestInteractive && !showDialogue && !showObjectInteraction) {
           const objName = nearestInteractive.getData('name');
           if (objName === 'NPC') {
@@ -323,6 +404,17 @@ export function BaseGameScreen({
       });
 
       this.input.keyboard!.on('keydown-SPACE', () => {
+        // Close if dialogue or interaction is open
+        if (showDialogue) {
+          setShowDialogue(false);
+          return;
+        }
+        if (showObjectInteraction) {
+          setShowObjectInteraction(false);
+          return;
+        }
+        
+        // Open if near an interactive object
         if (nearestInteractive && !showDialogue && !showObjectInteraction) {
           const objName = nearestInteractive.getData('name');
           if (objName === 'NPC') {
@@ -343,8 +435,8 @@ export function BaseGameScreen({
       // Update depth for pseudo-isometric sorting
       player.setDepth(player.y);
 
-      // WASD keyboard movement
-      if (!showDialogue && !showObjectInteraction) {
+      // WASD keyboard movement (check refs for current state)
+      if (!showDialogueRef.current && !showObjectInteractionRef.current) {
         let velocityX = 0;
         let velocityY = 0;
 
@@ -369,31 +461,38 @@ export function BaseGameScreen({
         const body = player.body as Phaser.Physics.Arcade.Body;
         body.setVelocity(velocityX, velocityY);
 
-        // Update sprite frame based on movement direction
+        // Update sprite animation based on movement direction
         if (velocityX !== 0 || velocityY !== 0) {
           let angle = Math.atan2(velocityY, velocityX) * (180 / Math.PI);
           if (angle < 0) angle += 360;
 
-          let frame = 0;
+          let animKey = 'walk-down';
           if (angle >= 337.5 || angle < 22.5) {
-            frame = 2; // Right
+            animKey = 'walk-right'; // Right →
           } else if (angle >= 22.5 && angle < 67.5) {
-            frame = 4; // Down-Right
+            animKey = 'walk-down-right'; // Down-Right ↘
           } else if (angle >= 67.5 && angle < 112.5) {
-            frame = 0; // Down
+            animKey = 'walk-down'; // Down ↓
           } else if (angle >= 112.5 && angle < 157.5) {
-            frame = 5; // Down-Left
+            animKey = 'walk-down-left'; // Down-Left ↙
           } else if (angle >= 157.5 && angle < 202.5) {
-            frame = 3; // Left
+            animKey = 'walk-left'; // Left ←
           } else if (angle >= 202.5 && angle < 247.5) {
-            frame = 7; // Up-Left
+            animKey = 'walk-up-left'; // Up-Left ↖
           } else if (angle >= 247.5 && angle < 292.5) {
-            frame = 1; // Up
+            animKey = 'walk-up'; // Up ↑
           } else {
-            frame = 6; // Up-Right
+            animKey = 'walk-up-right'; // Up-Right ↗
           }
 
-          player.setFrame(frame);
+          // Play animation if not already playing
+          if (player.anims.currentAnim?.key !== animKey) {
+            player.play(animKey);
+          }
+        } else {
+          // Stop animation when not moving
+          player.stop();
+          player.setFrame(0); // Reset to idle frame
         }
 
         player.setScale(3);
@@ -433,7 +532,7 @@ export function BaseGameScreen({
       });
 
       // Show interaction prompt
-      if (nearestInteractive && !showDialogue && !showObjectInteraction) {
+      if (nearestInteractive && !showDialogueRef.current && !showObjectInteractionRef.current) {
         const objName = nearestInteractive.getData('name');
         interactionPrompt.setText(`Press E or SPACE to interact with ${objName}`);
         interactionPrompt.setVisible(true);
@@ -460,6 +559,34 @@ export function BaseGameScreen({
       phaserGameRef.current = null;
     };
   }, [question.animation, currentQuestion, sceneConfig]);
+
+  // Sync refs with state for Phaser to access
+  useEffect(() => {
+    showDialogueRef.current = showDialogue;
+  }, [showDialogue]);
+
+  useEffect(() => {
+    showObjectInteractionRef.current = showObjectInteraction;
+  }, [showObjectInteraction]);
+
+  // ESC key handler at React level (has access to current state)
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        if (showDialogue) {
+          setShowDialogue(false);
+        }
+        if (showObjectInteraction) {
+          setShowObjectInteraction(false);
+        }
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [showDialogue, showObjectInteraction]);
 
   const handleDialogueChoice = (option: 'A' | 'B') => {
     const dimension =
@@ -497,8 +624,9 @@ export function BaseGameScreen({
         </div>
         <div className="flex items-center gap-2">
           <span className="bg-gray-700 px-2 py-1 rounded text-xs font-mono">E / SPACE</span>
-          <span>Interact</span>
+          <span>Interact </span>
         </div>
+        
         <div className="flex items-center gap-2">
           <span className="text-yellow-400">💡</span>
           <span className="text-xs text-gray-300">Walk near objects & NPCs</span>

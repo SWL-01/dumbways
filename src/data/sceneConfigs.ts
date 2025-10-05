@@ -3,7 +3,13 @@ import { SceneConfig } from '../types/game';
 export const partySceneConfig: SceneConfig = {
   name: 'Party Scene',
   backgroundUrl: '/scenes/party.png',
-  npcPosition: { x: 620, y: 320 },
+  npcPosition: { x: 900, y: 500 },
+  npcImage: '/assets/characters/ernest.png',
+  npcScale: 0.3,
+  playerConfig: {
+    startX: 200, 
+    startY: 600,
+  },
   objects: [
     { 
       x: 680, 
@@ -22,11 +28,12 @@ export const partySceneConfig: SceneConfig = {
       scale: 0.15,
     },
     { 
-      x: 300, 
-      y: 200, 
+      x: 520, 
+      y: 400, 
       name: 'Cullen', 
-      image: '/characters/cullen.png', 
-      interaction: '"This music is amazing! Want to dance?"'
+      image: '/assets/characters/cullen.png', 
+      interaction: '"This music is amazing! Want to dance?"',
+      scale: 0.3,
     },
   ],
 };
@@ -34,21 +41,21 @@ export const partySceneConfig: SceneConfig = {
 export const officeSceneConfig: SceneConfig = {
   name: 'Office Meeting Room',
   backgroundUrl: '/scenes/office.png',
-  npcPosition: { x: 650, y: 280 },
+  npcPosition: { x: 1150, y: 600 },
+  npcImage: '/assets/characters/boss.png',
+  npcScale: 0.4,
+  playerConfig: {
+    startX: 120,
+    startY: 280,
+  },
   objects: [
     { 
-      x: 500, 
-      y: 300, 
-      name: 'Conference Table', 
-      image: '/objects/desk.png', 
-      interaction: 'A large conference table with meeting notes scattered around.' 
-    },
-    { 
       x: 350, 
-      y: 400, 
-      name: 'Whiteboard', 
-      image: '/objects/whiteboard.png', 
-      interaction: 'The whiteboard shows a detailed project timeline with tasks and deadlines.' 
+      y: 600, 
+      name: 'Colleague', 
+      image: '/assets/characters/colleague.png', 
+      interaction: 'Have you heared about the company retreat next month? It\'s going to be fun!' ,
+      scale: 0.15,
     },
   ],
 };

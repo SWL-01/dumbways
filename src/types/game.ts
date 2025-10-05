@@ -40,6 +40,8 @@ export interface SceneConfig {
   name: string;
   backgroundUrl: string;
   npcPosition: { x: number; y: number };
+  npcImage?: string; // Custom NPC sprite image path
+  npcScale?: number; // Scale for NPC sprite (default: 0.15 for custom images)
   objects: GameObject[];
   playerConfig?: Partial<PlayerConfig>;
 }

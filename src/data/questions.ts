@@ -17,13 +17,13 @@ export const mbtiQuestions: MBTIQuestion[] = [
   },
   {
     id: 2,
-    scenario: "Your boss asks you to plan the company retreat...",
+    scenario: "Can you make a plan for the company retreat? ... what will you answer it?",
     optionA: {
-      text: "Create a detailed schedule with backup plans",
+      text: "I will create a detailed schedule with backup plans",
       dimension: 'J'
     },
     optionB: {
-      text: "Keep it flexible and see what happens!",
+      text: "I will keep it flexible and see what happens!",
       dimension: 'P'
     },
     animation: "planning"
