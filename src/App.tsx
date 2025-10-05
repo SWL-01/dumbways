@@ -43,8 +43,10 @@ function App() {
     }
   }, [screen, currentQuestionIndex]);
 
-  const handleStart = (age: number) => {
-    console.log('User age:', age); // TODO: Store age for AI analysis
+  const handleStart = (age?: number) => {
+    if (age) {
+      console.log('User age:', age); // TODO: Store age for AI analysis
+    }
     setScreen('question');
     setCurrentQuestionIndex(0);
     setScores({
