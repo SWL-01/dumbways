@@ -197,8 +197,9 @@ This project is open source and available under the MIT License.
 [View on Devpost](https://stormhacks2025.devpost.com/)
 
 ## 👥 Team
-
-Built with ❤️ by the PathQuest team for StormHacks 2025
+- Ernest @jumiknows
+- Cullen @cullendales
+- Siwoon @SWL-01
 
 ## 🙏 Acknowledgments
 
