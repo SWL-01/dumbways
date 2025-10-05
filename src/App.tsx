@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { StartScreen } from './components/StartScreen';
-import { GameScreen } from './components/GameScreen';
+import { IsometricGameScreen } from './components/IsometricGameScreen';
 import { ResultsScreen } from './components/ResultsScreen';
 import { LoadingScreen } from './components/LoadingScreen';
 import { mbtiQuestions } from './data/questions';
@@ -15,6 +15,7 @@ function App() {
   const [screen, setScreen] = useState<Screen>('start');
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [sessionId, setSessionId] = useState<string>('');
+  const [selectedVoiceId, setSelectedVoiceId] = useState<string>('pFZP5JQG7iQjIQuC4Bku'); // Default to Lily
   const [scores, setScores] = useState<MBTIScores>({
     E: 0,
     I: 0,
@@ -44,8 +45,7 @@ function App() {
   }, [screen, currentQuestionIndex]);
 
   const handleStart = () => {
-  const handleStart = (age: number) => {
-    console.log('User age:', age); // TODO: Store age for AI analysis
+    // Age collection removed for now - TODO: Add back age collection in StartScreen if needed
     setScreen('question');
     setCurrentQuestionIndex(0);
     setScores({
@@ -111,14 +111,21 @@ function App() {
 
   return (
     <>
-      {screen === 'start' && <StartScreen onStart={handleStart} />}
+      {screen === 'start' && (
+        <StartScreen 
+          onStart={handleStart} 
+          selectedVoiceId={selectedVoiceId}
+          onVoiceSelect={setSelectedVoiceId}
+        />
+      )}
 
       {screen === 'question' && (
-        <GameScreen
+        <IsometricGameScreen
           question={mbtiQuestions[currentQuestionIndex]}
           currentQuestion={currentQuestionIndex + 1}
           totalQuestions={mbtiQuestions.length}
           onAnswer={handleAnswer}
+          voiceId={selectedVoiceId}
         />
       )}
 
@@ -134,6 +141,7 @@ function App() {
           personality={personalityTypes[personalityType]}
           scores={scores}
           onRestart={handleRestart}
+          voiceId={selectedVoiceId}
         />
       )}
     </>
