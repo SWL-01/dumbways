@@ -4,6 +4,8 @@ import { MBTIQuestion } from '../types/mbti';
 import { DialogueBox } from './DialogueBox';
 import { TextToSpeech } from './TextToSpeech';
 import { walkingSoundManager } from '../utils/walkingSounds';
+import { gameEnhancer } from '../utils/gameEnhancer';
+import { AchievementNotification } from './AchievementNotification';
 import { 
   SceneConfig, 
   DEFAULT_PLAYER_CONFIG, 
@@ -36,6 +38,10 @@ export function BaseGameScreen({
   const [objectInteractionText, setObjectInteractionText] = useState('');
   const [interactedObjectName, setInteractedObjectName] = useState('');
   const [interactedObjectCharacterImage, setInteractedObjectCharacterImage] = useState<string | undefined>();
+  
+  // Fun interaction tracking
+  const [clickCount, setClickCount] = useState(0);
+  const [lastClickTime, setLastClickTime] = useState(0);
   
   // Refs to track dialogue states for Phaser to access current values
   const showDialogueRef = useRef(false);
@@ -396,8 +402,27 @@ export function BaseGameScreen({
         if (nearestInteractive && !showDialogue && !showObjectInteraction) {
           const objName = nearestInteractive.getData('name');
           if (objName === 'NPC') {
+            gameEnhancer.trackInteraction('npc');
             setShowDialogue(true);
           } else {
+            gameEnhancer.trackInteraction('object');
+            
+            // Rapid click mini-game check for E key
+            const now = Date.now();
+            if (now - lastClickTime < 1000) { // Within 1 second
+              const newCount = clickCount + 1;
+              setClickCount(newCount);
+              if (newCount >= 5) { // 5 rapid clicks
+                gameEnhancer.trackInteraction('secret');
+                gameEnhancer.createParticles(400, 300, 'celebration');
+                setClickCount(0);
+                alert('🎉 You found the rapid-click secret! Achievement unlocked!');
+              }
+            } else {
+              setClickCount(1);
+            }
+            setLastClickTime(now);
+            
             const interactionText = nearestInteractive.getData('interaction');
             const characterImage = nearestInteractive.getData('characterImage');
             setInteractedObjectName(objName);
@@ -423,8 +448,10 @@ export function BaseGameScreen({
         if (nearestInteractive && !showDialogue && !showObjectInteraction) {
           const objName = nearestInteractive.getData('name');
           if (objName === 'NPC') {
+            gameEnhancer.trackInteraction('npc');
             setShowDialogue(true);
           } else {
+            gameEnhancer.trackInteraction('object');
             const interactionText = nearestInteractive.getData('interaction');
             const characterImage = nearestInteractive.getData('characterImage');
             setInteractedObjectName(objName);
@@ -468,11 +495,12 @@ export function BaseGameScreen({
         const body = player.body as Phaser.Physics.Arcade.Body;
         body.setVelocity(velocityX, velocityY);
 
-        // Handle walking sound effects
+        // Handle walking sound effects and movement tracking
         if (velocityX !== 0 || velocityY !== 0) {
           // Player is moving - start walking sounds
           const speed = Math.sqrt(velocityX * velocityX + velocityY * velocityY);
           walkingSoundManager.startWalking(speed);
+          gameEnhancer.trackInteraction('object'); // Track movement as object interaction for explorer achievement
         } else {
           // Player stopped moving - stop walking sounds
           walkingSoundManager.stopWalking();
@@ -592,7 +620,21 @@ export function BaseGameScreen({
     showObjectInteractionRef.current = showObjectInteraction;
   }, [showObjectInteraction]);
 
-
+  // Secret key combination tracker
+  const [secretKeys, setSecretKeys] = useState<string[]>([]);
+  
+  useEffect(() => {
+    const secretSequence = ['ArrowUp', 'ArrowUp', 'ArrowDown', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'ArrowLeft', 'ArrowRight', 'KeyB', 'KeyA'];
+    
+    if (secretKeys.length > 0 && secretKeys.length === secretSequence.length) {
+      const matches = secretKeys.every((key, index) => key === secretSequence[index]);
+      if (matches) {
+        gameEnhancer.trackInteraction('secret');
+        gameEnhancer.createParticles(400, 300, 'celebration');
+        setSecretKeys([]); // Reset
+      }
+    }
+  }, [secretKeys]);
 
   // ESC key handler at React level (has access to current state)
   useEffect(() => {
@@ -605,6 +647,14 @@ export function BaseGameScreen({
           setShowObjectInteraction(false);
         }
       }
+      
+      // Track secret key sequence (Konami Code!)
+      if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'KeyB', 'KeyA'].includes(event.code)) {
+        setSecretKeys(prev => {
+          const newKeys = [...prev, event.code];
+          return newKeys.length > 10 ? newKeys.slice(-10) : newKeys; // Keep only last 10 keys
+        });
+      }
     };
 
     window.addEventListener('keydown', handleKeyDown);
@@ -616,6 +666,11 @@ export function BaseGameScreen({
   const handleDialogueChoice = (option: 'A' | 'B') => {
     const dimension =
       option === 'A' ? question.optionA.dimension : question.optionB.dimension;
+    
+    // Track question answered and create particle effect
+    gameEnhancer.trackInteraction('question');
+    gameEnhancer.createParticles(400, 300, 'celebration');
+    
     setShowDialogue(false);
 
     setTimeout(() => {
@@ -655,6 +710,15 @@ export function BaseGameScreen({
         <div className="flex items-center gap-2">
           <span className="text-yellow-400">💡</span>
           <span className="text-xs text-gray-300">Walk near objects & NPCs</span>
+        </div>
+        
+        <div className="border-t border-gray-600 pt-3 mt-3">
+          <div className="font-bold text-sm mb-2 text-green-400">📊 Stats</div>
+          <div className="text-xs space-y-1">
+            <div>NPCs: {gameEnhancer.getStats().npcInteractions} 🗣️</div>
+            <div>Objects: {gameEnhancer.getStats().objectsExamined} 🔍</div>
+            <div>Secrets: {gameEnhancer.getStats().secretsFound} 🎁</div>
+          </div>
         </div>
       </div>
 
@@ -738,6 +802,9 @@ export function BaseGameScreen({
           </div>
         </div>
       )}
+      
+      {/* Achievement Notifications */}
+      <AchievementNotification />
     </div>
   );
 }

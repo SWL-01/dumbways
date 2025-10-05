@@ -1,6 +1,7 @@
 import { useState, useCallback } from 'react';
 import { ElevenLabsClient } from '@elevenlabs/elevenlabs-js';
 import { Volume2, VolumeX, Loader2 } from 'lucide-react';
+import { gameEnhancer } from '../utils/gameEnhancer';
 
 interface TextToSpeechProps {
   text: string;
@@ -68,6 +69,9 @@ export function TextToSpeech({
       };
 
       await audioElement.play();
+      
+      // Track TTS usage for achievements
+      gameEnhancer.trackInteraction('tts');
 
     } catch (err: unknown) {
       const errorMessage = err instanceof Error && err.message.includes('429') 
