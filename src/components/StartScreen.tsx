@@ -1,38 +1,64 @@
-import { Skull } from 'lucide-react';
+
+import { TextToSpeech } from './TextToSpeech';
+import { VoiceSelector } from './VoiceSelector';
 
 interface StartScreenProps {
   onStart: () => void;
+  selectedVoiceId: string;
+  onVoiceSelect: (voiceId: string) => void;
 }
 
-export function StartScreen({ onStart }: StartScreenProps) {
+export function StartScreen({ onStart, selectedVoiceId, onVoiceSelect }: StartScreenProps) {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-red-500 via-orange-500 to-yellow-500 flex items-center justify-center p-4">
-      <div className="max-w-2xl w-full text-center animate-fadeIn">
-        <div className="mb-8 flex justify-center">
-          <Skull className="w-32 h-32 text-white animate-bounce" />
+    <div className="min-h-screen flex items-center justify-center p-4 relative overflow-hidden">
+      {/* Background Image */}
+      <div 
+        className="absolute inset-0 bg-cover bg-center bg-no-repeat"
+        style={{ 
+          backgroundImage: `url('/background.png')`,
+          imageRendering: 'pixelated'
+        }}
+      />
+      
+      {/* Gradient Overlay */}
+      <div className="absolute inset-0 bg-black/30" />
+
+      {/* Voice Selector - Top Right */}
+      <div className="absolute top-4 right-4 z-20">
+        <div className="text-right mb-2">
+          <span className="text-white/80 text-sm font-medium">Voice Guide</span>
         </div>
+        <VoiceSelector
+          selectedVoiceId={selectedVoiceId}
+          onVoiceSelect={onVoiceSelect}
+          className="w-64"
+        />
+      </div>
+
+      {/* Content */}
+      <div className="max-w-2xl w-full text-center animate-fadeIn relative z-10">
 
         <h1 className="text-6xl md:text-8xl font-black text-white mb-6 animate-pulse drop-shadow-lg">
-          DUMB WAYS
+          PathQuest
         </h1>
-        <h2 className="text-4xl md:text-6xl font-black text-white mb-8 drop-shadow-lg">
-          TO FIND YOUR PERSONALITY
-        </h2>
 
-        <p className="text-xl md:text-2xl text-white mb-12 font-semibold drop-shadow">
-          Answer 12 silly scenarios to discover your MBTI type!
-        </p>
+        <div className="flex items-center justify-center gap-4 mb-12">
+          <p className="text-xl md:text-2xl text-white drop-shadow">
+            Answer 12 scenarios to discover your unique personality type!
+          </p>
+          <TextToSpeech 
+            text="Answer 12 scenarios to discover your unique personality type!"
+            voiceId={selectedVoiceId}
+            className="ml-2"
+          />
+        </div>
 
         <button
           onClick={onStart}
           className="bg-white text-orange-600 px-12 py-6 rounded-full text-2xl font-black hover:bg-gray-100 transform hover:scale-110 transition-all duration-300 shadow-2xl animate-wiggle"
         >
-          START THE MADNESS!
+          Click Here to Start!
         </button>
-
-        <div className="mt-12 text-white text-sm opacity-75">
-          <p>No actual harm will come to you. Probably.</p>
-        </div>
       </div>
     </div>
   );

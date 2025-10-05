@@ -1,19 +1,21 @@
 import { useState, useEffect } from 'react';
 import { StartScreen } from './components/StartScreen';
-import { QuestionScreen } from './components/QuestionScreen';
+import { IsometricGameScreen } from './components/IsometricGameScreen';
 import { ResultsScreen } from './components/ResultsScreen';
+import { LoadingScreen } from './components/LoadingScreen';
 import { mbtiQuestions } from './data/questions';
 import { personalityTypes } from './data/personalities';
 import { MBTIScores } from './types/mbti';
 import { calculateMBTIType, generateSessionId } from './utils/mbtiCalculator';
 import { supabase } from './lib/supabase';
 
-type Screen = 'start' | 'question' | 'results';
+type Screen = 'start' | 'question' | 'questionLoading' | 'results';
 
 function App() {
   const [screen, setScreen] = useState<Screen>('start');
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [sessionId, setSessionId] = useState<string>('');
+  const [selectedVoiceId, setSelectedVoiceId] = useState<string>('pFZP5JQG7iQjIQuC4Bku'); // Default to Lily
   const [scores, setScores] = useState<MBTIScores>({
     E: 0,
     I: 0,
@@ -30,7 +32,22 @@ function App() {
     setSessionId(generateSessionId());
   }, []);
 
-  const handleStart = () => {
+  // Handle loading screen transitions
+  useEffect(() => {
+    if (screen === 'questionLoading') {
+      const timer = setTimeout(() => {
+        setCurrentQuestionIndex(currentQuestionIndex + 1);
+        setScreen('question');
+      }, 2000); // 2 second loading screen
+
+      return () => clearTimeout(timer);
+    }
+  }, [screen, currentQuestionIndex]);
+
+  const handleStart = (age?: number) => {
+    if (age) {
+      console.log('User age:', age); // TODO: Store age for AI analysis
+    }
     setScreen('question');
     setCurrentQuestionIndex(0);
     setScores({
@@ -53,7 +70,8 @@ function App() {
     setScores(newScores);
 
     if (currentQuestionIndex < mbtiQuestions.length - 1) {
-      setCurrentQuestionIndex(currentQuestionIndex + 1);
+      // Show loading screen before next question
+      setScreen('questionLoading');
     } else {
       const type = calculateMBTIType(newScores);
       setPersonalityType(type);
@@ -95,14 +113,28 @@ function App() {
 
   return (
     <>
-      {screen === 'start' && <StartScreen onStart={handleStart} />}
+      {screen === 'start' && (
+        <StartScreen 
+          onStart={handleStart} 
+          selectedVoiceId={selectedVoiceId}
+          onVoiceSelect={setSelectedVoiceId}
+        />
+      )}
 
       {screen === 'question' && (
-        <QuestionScreen
+        <IsometricGameScreen
           question={mbtiQuestions[currentQuestionIndex]}
           currentQuestion={currentQuestionIndex + 1}
           totalQuestions={mbtiQuestions.length}
           onAnswer={handleAnswer}
+          voiceId={selectedVoiceId}
+        />
+      )}
+
+      {screen === 'questionLoading' && (
+        <LoadingScreen
+          currentQuestion={currentQuestionIndex + 1}
+          totalQuestions={mbtiQuestions.length}
         />
       )}
 
@@ -111,6 +143,7 @@ function App() {
           personality={personalityTypes[personalityType]}
           scores={scores}
           onRestart={handleRestart}
+          voiceId={selectedVoiceId}
         />
       )}
     </>

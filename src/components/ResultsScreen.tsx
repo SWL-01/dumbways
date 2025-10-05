@@ -3,11 +3,13 @@ import { Award, TrendingUp, Share2 } from 'lucide-react';
 import { PersonalityType } from '../types/mbti';
 import { getPercentages } from '../utils/mbtiCalculator';
 import { MBTIScores } from '../types/mbti';
+import { TextToSpeech } from './TextToSpeech';
 
 interface ResultsScreenProps {
   personality: PersonalityType;
   scores: MBTIScores;
   onRestart: () => void;
+  voiceId?: string;
 }
 
 export function ResultsScreen({ personality, scores, onRestart }: ResultsScreenProps) {

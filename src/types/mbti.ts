@@ -10,6 +10,7 @@ export interface MBTIQuestion {
     dimension: 'E' | 'I' | 'S' | 'N' | 'T' | 'F' | 'J' | 'P';
   };
   animation: string;
+  voice: string;
 }
 
 export interface MBTIScores {
