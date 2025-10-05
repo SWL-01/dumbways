@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import Phaser from 'phaser';
 import { MBTIQuestion } from '../types/mbti';
 import { DialogueBox } from './DialogueBox';
+import { TextToSpeech } from './TextToSpeech';
 import { 
   SceneConfig, 
   DEFAULT_PLAYER_CONFIG, 
@@ -15,6 +16,7 @@ interface BaseGameScreenProps {
   totalQuestions: number;
   onAnswer: (dimension: 'E' | 'I' | 'S' | 'N' | 'T' | 'F' | 'J' | 'P') => void;
   sceneConfig: SceneConfig;
+  voiceId?: string;
 }
 
 export function BaseGameScreen({
@@ -23,6 +25,7 @@ export function BaseGameScreen({
   totalQuestions,
   onAnswer,
   sceneConfig,
+  voiceId,
 }: BaseGameScreenProps) {
   const gameContainerRef = useRef<HTMLDivElement>(null);
   const phaserGameRef = useRef<Phaser.Game | null>(null);
@@ -519,7 +522,16 @@ export function BaseGameScreen({
                   <span className="text-2xl">🔍</span>
                 </div>
                 <div className="flex-1">
-                  <h3 className="text-2xl font-bold text-cyan-400 mb-2">{interactedObjectName}</h3>
+                  <div className="flex items-center justify-between mb-2">
+                    <h3 className="text-2xl font-bold text-cyan-400">{interactedObjectName}</h3>
+                    {voiceId && (
+                      <TextToSpeech
+                        text={objectInteractionText}
+                        voiceId={voiceId}
+                        className="ml-2"
+                      />
+                    )}
+                  </div>
                   <p className="text-white text-lg leading-relaxed">{objectInteractionText}</p>
                 </div>
               </div>
@@ -548,6 +560,7 @@ export function BaseGameScreen({
                 { text: question.optionB.text, key: 'B' as const },
               ]}
               onSelect={handleDialogueChoice}
+              voiceId={voiceId}
             />
           </div>
         </div>

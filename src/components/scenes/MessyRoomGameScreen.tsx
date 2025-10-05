@@ -7,6 +7,7 @@ interface MessyRoomGameScreenProps {
   currentQuestion: number;
   totalQuestions: number;
   onAnswer: (dimension: 'E' | 'I' | 'S' | 'N' | 'T' | 'F' | 'J' | 'P') => void;
+  voiceId?: string;
 }
 
 export function MessyRoomGameScreen(props: MessyRoomGameScreenProps) {
