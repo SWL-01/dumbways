@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { StartScreen } from './components/StartScreen';
-import { GameScreen } from './components/GameScreen';
+import { IsometricGameScreen } from './components/IsometricGameScreen';
 import { ResultsScreen } from './components/ResultsScreen';
 import { LoadingScreen } from './components/LoadingScreen';
 import { mbtiQuestions } from './data/questions';
@@ -114,7 +114,7 @@ function App() {
       {screen === 'start' && <StartScreen onStart={handleStart} />}
 
       {screen === 'question' && (
-        <GameScreen
+        <IsometricGameScreen
           question={mbtiQuestions[currentQuestionIndex]}
           currentQuestion={currentQuestionIndex + 1}
           totalQuestions={mbtiQuestions.length}
