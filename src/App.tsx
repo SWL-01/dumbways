@@ -15,6 +15,7 @@ function App() {
   const [screen, setScreen] = useState<Screen>('start');
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [sessionId, setSessionId] = useState<string>('');
+  const [selectedVoiceId, setSelectedVoiceId] = useState<string>('pFZP5JQG7iQjIQuC4Bku'); // Default to Lily
   const [scores, setScores] = useState<MBTIScores>({
     E: 0,
     I: 0,
@@ -43,8 +44,8 @@ function App() {
     }
   }, [screen, currentQuestionIndex]);
 
-  const handleStart = (age: number) => {
-    console.log('User age:', age); // TODO: Store age for AI analysis
+  const handleStart = () => {
+    // Age collection removed for now - TODO: Add back age collection in StartScreen if needed
     setScreen('question');
     setCurrentQuestionIndex(0);
     setScores({
@@ -110,7 +111,13 @@ function App() {
 
   return (
     <>
-      {screen === 'start' && <StartScreen onStart={handleStart} />}
+      {screen === 'start' && (
+        <StartScreen 
+          onStart={handleStart} 
+          selectedVoiceId={selectedVoiceId}
+          onVoiceSelect={setSelectedVoiceId}
+        />
+      )}
 
       {screen === 'question' && (
         <IsometricGameScreen
