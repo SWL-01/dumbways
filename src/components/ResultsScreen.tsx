@@ -1,4 +1,5 @@
-import { Award, TrendingUp, Briefcase, Share2 } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { Award, TrendingUp, Share2 } from 'lucide-react';
 import { PersonalityType } from '../types/mbti';
 import { getPercentages } from '../utils/mbtiCalculator';
 import { MBTIScores } from '../types/mbti';
@@ -10,6 +11,8 @@ interface ResultsScreenProps {
 }
 
 export function ResultsScreen({ personality, scores, onRestart }: ResultsScreenProps) {
+  const [aiResult, setAiResult] = useState<Record<string, string> | null>(null);
+
   const percentages = getPercentages(scores);
   const type = personality.type;
 
@@ -30,14 +33,36 @@ export function ResultsScreen({ personality, scores, onRestart }: ResultsScreenP
     }
   };
 
+  useEffect(() => {
+    async function loadAI() {
+      try {
+        const res = await fetch('http://localhost:4000/api/gemini', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ personality_type: type, age: 25 }),
+        });
+        if (!res.ok) throw new Error('Failed to fetch AI result');
+        const data = await res.json(); 
+        if (Array.isArray(data) && data.length > 0) {
+          const item = data[0];
+          setAiResult({
+            "About Your Personality": item.Personality_info ?? '',
+            "Your Age and Personality": Array.isArray(item.age_info) ? item.age_info.join(' ') : (item.age_info ?? ''),
+            "Most Suitable Careers": Array.isArray(item.careers) ? item.careers.join(', ') : (item.careers ?? '')
+          });
+        }
+      } catch (err) {
+        console.error('AI fetch error', err);
+      }
+    }
+    loadAI();
+  }, [type]);
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-indigo-600 via-purple-600 to-pink-600 py-8 px-4">
       <div className="max-w-4xl mx-auto">
+        {/* Header Section */}
         <div className="text-center mb-8 animate-fadeIn">
-          <div className="inline-block bg-white bg-opacity-20 backdrop-blur-sm rounded-full px-8 py-3 mb-6">
-            <span className="text-white text-xl font-semibold">You Survived!</span>
-          </div>
-
           <h1 className="text-6xl md:text-8xl font-black text-white mb-4 drop-shadow-lg animate-bounce">
             {type}
           </h1>
@@ -47,83 +72,52 @@ export function ResultsScreen({ personality, scores, onRestart }: ResultsScreenP
           </h2>
         </div>
 
-        <div className="bg-white rounded-3xl shadow-2xl p-8 md:p-12 mb-8 animate-slideIn">
-          <div className="flex items-center gap-3 mb-6">
-            <Award className="w-8 h-8 text-purple-600" />
-            <h3 className="text-2xl font-bold text-gray-800">Your Personality</h3>
+        {/* AI Result Section */}
+        {aiResult && (
+          <div className="bg-white rounded-xl p-6 mt-6 shadow-lg animate-slideIn">
+            <h3 className="text-xl font-bold mb-4"> Personality Insights From Gemini </h3>
+            {Object.entries(aiResult).map(([title, content]) => (
+              <div key={title} className="mb-4">
+                <h4 className="text-lg font-semibold text-purple-600 mb-1">{title}</h4>
+                <p className="text-gray-700">{content}</p>
+              </div>
+            ))}
           </div>
+        )}
 
-          <p className="text-lg text-gray-700 leading-relaxed mb-8">
-            {personality.description}
-          </p>
-
-          <div className="mb-8">
-            <div className="flex items-center gap-3 mb-4">
-              <TrendingUp className="w-8 h-8 text-purple-600" />
-              <h3 className="text-2xl font-bold text-gray-800">Your Scores</h3>
-            </div>
-
-            <div className="space-y-4">
-              {dimensions.map((dim, idx) => (
-                <div key={idx} className="bg-gray-50 rounded-xl p-4">
-                  <div className="flex justify-between mb-2">
-                    <span className="font-bold text-purple-600">{dim.left}</span>
-                    <span className="font-bold text-pink-600">{dim.right}</span>
-                  </div>
-                  <div className="relative h-8 bg-gray-200 rounded-full overflow-hidden">
-                    <div
-                      className="absolute left-0 h-full bg-gradient-to-r from-purple-500 to-purple-600 transition-all duration-1000"
-                      style={{ width: `${dim.leftPercent}%` }}
-                    />
-                    <div
-                      className="absolute right-0 h-full bg-gradient-to-l from-pink-500 to-pink-600 transition-all duration-1000"
-                      style={{ width: `${dim.rightPercent}%` }}
-                    />
-                  </div>
-                  <div className="flex justify-between mt-1 text-sm text-gray-600">
-                    <span>{dim.leftPercent}%</span>
-                    <span>{dim.rightPercent}%</span>
-                  </div>
+        {/* Scores Section */}
+        <div className="mb-8 mt-8">
+          <div className="flex items-center gap-3 mb-4">
+            <TrendingUp className="w-8 h-8 text-purple-600" />
+            <h3 className="text-2xl font-bold text-gray-800">Your Scores</h3>
+          </div>
+          <div className="space-y-4">
+            {dimensions.map((dim, idx) => (
+              <div key={idx} className="bg-gray-50 rounded-xl p-4">
+                <div className="flex justify-between mb-2">
+                  <span className="font-bold text-purple-600">{dim.left}</span>
+                  <span className="font-bold text-pink-600">{dim.right}</span>
                 </div>
-              ))}
-            </div>
-          </div>
-
-          <div className="mb-8">
-            <div className="flex items-center gap-3 mb-4">
-              <TrendingUp className="w-8 h-8 text-purple-600" />
-              <h3 className="text-2xl font-bold text-gray-800">Your Strengths</h3>
-            </div>
-            <div className="flex flex-wrap gap-2">
-              {personality.strengths.map((strength, idx) => (
-                <span
-                  key={idx}
-                  className="bg-purple-100 text-purple-800 px-4 py-2 rounded-full font-semibold"
-                >
-                  {strength}
-                </span>
-              ))}
-            </div>
-          </div>
-
-          <div>
-            <div className="flex items-center gap-3 mb-4">
-              <Briefcase className="w-8 h-8 text-purple-600" />
-              <h3 className="text-2xl font-bold text-gray-800">Ideal Careers</h3>
-            </div>
-            <div className="flex flex-wrap gap-2">
-              {personality.careers.map((career, idx) => (
-                <span
-                  key={idx}
-                  className="bg-pink-100 text-pink-800 px-4 py-2 rounded-full font-semibold"
-                >
-                  {career}
-                </span>
-              ))}
-            </div>
+                <div className="relative h-8 bg-gray-200 rounded-full overflow-hidden">
+                  <div
+                    className="absolute left-0 h-full bg-gradient-to-r from-purple-500 to-purple-600 transition-all duration-1000"
+                    style={{ width: `${dim.leftPercent}%` }}
+                  />
+                  <div
+                    className="absolute right-0 h-full bg-gradient-to-l from-pink-500 to-pink-600 transition-all duration-1000"
+                    style={{ width: `${dim.rightPercent}%` }}
+                  />
+                </div>
+                <div className="flex justify-between mt-1 text-sm text-gray-600">
+                  <span>{dim.leftPercent}%</span>
+                  <span>{dim.rightPercent}%</span>
+                </div>
+              </div>
+            ))}
           </div>
         </div>
 
+        {/* Buttons */}
         <div className="flex flex-col sm:flex-row gap-4 justify-center animate-fadeIn">
           <button
             onClick={handleShare}
