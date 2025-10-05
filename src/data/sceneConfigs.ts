@@ -56,7 +56,7 @@ export const officeSceneConfig: SceneConfig = {
       y: 600, 
       name: 'Colleague', 
       image: '/assets/characters/colleague.png', 
-      interaction: 'Have you heared about the company retreat next month? It\'s going to be fun!' ,
+      interaction: 'Have you heard about the company retreat next month? It\'s going to be fun!' ,
       scale: 0.15,
     },
   ],
