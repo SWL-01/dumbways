@@ -15,6 +15,13 @@ export function ResultsScreen({ personality, scores, onRestart }: ResultsScreenP
 
   const percentages = getPercentages(scores);
   const type = personality.type;
+  // allowed personality images (uppercased)
+  const allowedTypes = [
+    'ENTJ','ENFJ','ESFJ','ESTJ','ENTP','ENFP','ESFP','ESTP',
+    'INTJ','INFJ','ISFJ','ISTJ','INTP','INFP','ISFP','ISTP'
+  ];
+  const imageKey = allowedTypes.includes(type.toUpperCase()) ? type.toUpperCase() : 'ISFJ';
+  const bgPath = `/images/${imageKey}.png`;
 
   const dimensions = [
     { left: 'E', right: 'I', leftPercent: percentages.E, rightPercent: percentages.I },
@@ -72,11 +79,16 @@ export function ResultsScreen({ personality, scores, onRestart }: ResultsScreenP
   }, [type]);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-indigo-600 via-purple-600 to-pink-600 py-8 px-4">
-      <div className="max-w-4xl mx-auto">
+    <div
+      className="min-h-screen relative bg-cover bg-center py-8 px-4"
+      style={{ backgroundImage: `url('${bgPath}')` }}
+    >
+      {/* absolute overlay behind content */}
+      <div className="absolute inset-0 bg-black/30 pointer-events-none" />
+      <div className="relative max-w-4xl mx-auto">
         {/* Header Section */}
         <div className="text-center mb-8 animate-fadeIn">
-          <h1 className="text-6xl md:text-8xl font-black text-white mb-4 drop-shadow-lg animate-bounce">
+          <h1 className="text-6xl md:text-8xl font-black text-white mb-4 drop-shadow-lg">
             {type}
           </h1>
 
@@ -102,7 +114,7 @@ export function ResultsScreen({ personality, scores, onRestart }: ResultsScreenP
         <div className="mb-8 mt-8">
           <div className="flex items-center gap-3 mb-4">
             <TrendingUp className="w-8 h-8 text-purple-600" />
-            <h3 className="text-2xl font-bold text-gray-800">Your Scores</h3>
+            <h3 className="text-2xl font-bold text-white">Your Scores</h3>
           </div>
           <div className="space-y-4">
             {dimensions.map((dim, idx) => (
