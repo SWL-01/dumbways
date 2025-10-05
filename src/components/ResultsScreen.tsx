@@ -57,8 +57,12 @@ export function ResultsScreen({ personality, scores, onRestart }: ResultsScreenP
         });
         */
 
-        // Real API call (uncommented)
-        const res = await fetch('http://localhost:4000/api/gemini', {
+        // Real API call - works both locally and on Vercel
+        const apiUrl = import.meta.env.PROD 
+          ? '/api/gemini'  // Production: use relative path (Vercel serverless function)
+          : 'http://localhost:4000/api/gemini';  // Development: use local server
+        
+        const res = await fetch(apiUrl, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ personality_type: type, age: 25 }),
