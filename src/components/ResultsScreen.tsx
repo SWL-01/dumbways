@@ -36,6 +36,18 @@ export function ResultsScreen({ personality, scores, onRestart }: ResultsScreenP
   useEffect(() => {
     async function loadAI() {
       try {
+        // Hardcoded AI response for testing
+        setAiResult({
+          Personality_info:
+            "About Your Personality\nISFJ stands for Introversion, Sensing, Feeling, and Judging. Individuals with this personality type are often called 'The Defender' or 'The Protector'. They are characterized by their warm-hearted, responsible, and reserved nature. ISFJs are deeply committed to their duties and responsibilities, often putting the needs of others before their own. They are practical, grounded in reality, and pay close attention to details, making them reliable and meticulous. Their strong sense of duty is coupled with a rich inner world of empathy and compassion. They are observant of others' feelings and strive to create harmonious environments, often acting as quiet pillars of support within their communities and families. While they may not always express their feelings openly, their actions speak volumes about their care and dedication. They value tradition, stability, and security, and are known for their loyalty and patience.",
+          age_info:
+            "Your Age and Personality\nAt age 25, an ISFJ might be fully immersed in establishing their career and personal life, seeking stability and security. They are likely to be deeply invested in their relationships, nurturing their friendships and romantic partnerships with dedication and loyalty. Their strong sense of duty and responsibility will likely manifest in their professional life, where they will strive to be reliable and hardworking, potentially taking on more than their fair share of tasks. An ISFJ at 25 might be grappling with balancing their innate desire to help others with the need to set personal boundaries, as their accommodating nature can sometimes lead to being overwhelmed. They may be seeking to build a stable home environment, reflecting their appreciation for tradition and order. While generally reserved, they might be slowly opening up more to a select few trusted individuals, sharing their rich inner world. They will likely be very attuned to the emotional needs of those around them and will actively work to maintain harmony in their social circles.",
+          careers:
+            "Nursing, Teaching, Social Work, Counseling, Librarian, Administrative Assistant, Human Resources, Medical Assistant, Child Care Provider, Religious Worker, Accountant, Dental Hygienist, Physical Therapist, Interior Designer, Executive Assistant"
+        });
+
+        // For real API testing, uncomment the block below and remove the hardcoded setAiResult above.
+        /*
         const res = await fetch('http://localhost:4000/api/gemini', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -46,11 +58,12 @@ export function ResultsScreen({ personality, scores, onRestart }: ResultsScreenP
         if (Array.isArray(data) && data.length > 0) {
           const item = data[0];
           setAiResult({
-            "About Your Personality": item.Personality_info ?? '',
-            "Your Age and Personality": Array.isArray(item.age_info) ? item.age_info.join(' ') : (item.age_info ?? ''),
-            "Most Suitable Careers": Array.isArray(item.careers) ? item.careers.join(', ') : (item.careers ?? '')
+            Personality_info: item.Personality_info ?? '',
+            age_info: Array.isArray(item.age_info) ? item.age_info.join(' ') : (item.age_info ?? ''),
+            careers: Array.isArray(item.careers) ? item.careers.join(', ') : (item.careers ?? '')
           });
         }
+        */
       } catch (err) {
         console.error('AI fetch error', err);
       }
