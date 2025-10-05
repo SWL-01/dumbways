@@ -6,6 +6,7 @@ export const partySceneConfig: SceneConfig = {
   npcPosition: { x: 900, y: 500 },
   npcImage: '/assets/characters/ernest.png',
   npcScale: 0.3,
+  characterImage: '/assets/characters/ernest.png',
   playerConfig: {
     startX: 200, 
     startY: 600,
@@ -44,6 +45,7 @@ export const officeSceneConfig: SceneConfig = {
   npcPosition: { x: 1150, y: 600 },
   npcImage: '/assets/characters/boss.png',
   npcScale: 0.4,
+  characterImage: '/assets/characters/boss.png',
   playerConfig: {
     startX: 120,
     startY: 280,
@@ -66,6 +68,7 @@ export const classroomSceneConfig: SceneConfig = {
   npcPosition: { x: 1000, y: 400 },
   npcImage: '/assets/characters/sillygirl.png',
   npcScale: 0.25,
+  characterImage: '/assets/characters/sillygirl.png',
   objects: [
     { 
       x: 300, 
@@ -92,6 +95,7 @@ export const coffeeShopSceneConfig: SceneConfig = {
   npcPosition: { x: 850, y: 500 },
   npcImage: '/assets/characters/girlfriend.png',
   npcScale: 0.3,
+  characterImage: '/assets/characters/girlfriend.png',
   objects: [
     { 
       x: 445, 
