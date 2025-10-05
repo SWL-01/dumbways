@@ -1,9 +1,9 @@
 import { useState, useEffect } from 'react';
-import { Award, TrendingUp, Share2 } from 'lucide-react';
+import { Share2, TrendingUp } from 'lucide-react';
 import { PersonalityType } from '../types/mbti';
 import { getPercentages } from '../utils/mbtiCalculator';
 import { MBTIScores } from '../types/mbti';
-import { TextToSpeech } from './TextToSpeech';
+import { CareerCounselor } from './CareerCounselor';
 
 interface ResultsScreenProps {
   personality: PersonalityType;
@@ -84,12 +84,12 @@ export function ResultsScreen({ personality, scores, onRestart }: ResultsScreenP
 
   return (
     <div
-      className="min-h-screen relative bg-cover bg-center py-8 px-4"
+      className="min-h-screen relative bg-cover bg-center py-8 px-4 sm:px-6 lg:px-8"
       style={{ backgroundImage: `url('${bgPath}')` }}
     >
       {/* absolute overlay behind content */}
       <div className="absolute inset-0 bg-black/30 pointer-events-none" />
-      <div className="relative max-w-4xl mx-auto">
+      <div className="relative max-w-4xl mx-auto pb-8">
         {/* Header Section */}
         <div className="text-center mb-8 animate-fadeIn">
           <h1 className="text-6xl md:text-8xl font-black text-white mb-4 drop-shadow-lg">
@@ -125,26 +125,22 @@ export function ResultsScreen({ personality, scores, onRestart }: ResultsScreenP
         )}
 
         {/* Scores Section */}
-        <div className="mb-8 mt-8">
-          <div className="flex items-center gap-3 mb-4">
+        <div className="mb-12 mt-8">
+          <div className="flex items-center gap-3 mb-6">
             <TrendingUp className="w-8 h-8 text-purple-600" />
-            <h3 className="text-2xl font-bold text-white">Your Scores</h3>
+            <h3 className="text-2xl font-bold text-white drop-shadow">Your Personality Breakdown</h3>
           </div>
-          <div className="space-y-4">
-            {dimensions.map((dim, idx) => (
-              <div key={idx} className="bg-gray-50 rounded-xl p-4">
-                <div className="flex justify-between mb-2">
-                  <span className="font-bold text-purple-600">{dim.left}</span>
-                  <span className="font-bold text-pink-600">{dim.right}</span>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {dimensions.map((dim, index) => (
+              <div key={index} className="bg-white/95 backdrop-blur-sm rounded-2xl p-6 shadow-xl border border-white/20">
+                <div className="flex justify-between items-center mb-4">
+                  <span className="text-xl font-bold text-gray-800">{dim.left}</span>
+                  <span className="text-xl font-bold text-gray-800">{dim.right}</span>
                 </div>
-                <div className="relative h-8 bg-gray-200 rounded-full overflow-hidden">
-                  <div
-                    className="absolute left-0 h-full bg-gradient-to-r from-purple-500 to-purple-600 transition-all duration-1000"
+                <div className="h-4 bg-gray-200 rounded-full overflow-hidden">
+                  <div 
+                    className="h-full bg-gradient-to-r from-purple-500 to-blue-500 rounded-full transition-all duration-1000 ease-out"
                     style={{ width: `${dim.leftPercent}%` }}
-                  />
-                  <div
-                    className="absolute right-0 h-full bg-gradient-to-l from-pink-500 to-pink-600 transition-all duration-1000"
-                    style={{ width: `${dim.rightPercent}%` }}
                   />
                 </div>
                 <div className="flex justify-between mt-1 text-sm text-gray-600">
@@ -156,8 +152,17 @@ export function ResultsScreen({ personality, scores, onRestart }: ResultsScreenP
           </div>
         </div>
 
+        {/* Career Counselor Section */}
+        <div className="mt-12 mb-12 animate-fadeIn">
+          <CareerCounselor 
+            personality={personality} 
+            scores={scores}
+            aiResult={aiResult} 
+          />
+        </div>
+
         {/* Buttons */}
-        <div className="flex flex-col sm:flex-row gap-4 justify-center animate-fadeIn">
+        <div className="flex flex-col sm:flex-row gap-4 justify-center animate-fadeIn pb-8">
           <button
             onClick={handleShare}
             className="bg-white text-purple-600 px-8 py-4 rounded-full text-xl font-bold hover:bg-gray-100 transform hover:scale-105 transition-all duration-300 shadow-lg flex items-center justify-center gap-2"
