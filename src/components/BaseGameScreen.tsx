@@ -3,6 +3,7 @@ import Phaser from 'phaser';
 import { MBTIQuestion } from '../types/mbti';
 import { DialogueBox } from './DialogueBox';
 import { TextToSpeech } from './TextToSpeech';
+import { walkingSoundManager } from '../utils/walkingSounds';
 import { 
   SceneConfig, 
   DEFAULT_PLAYER_CONFIG, 
@@ -34,6 +35,7 @@ export function BaseGameScreen({
   const [showObjectInteraction, setShowObjectInteraction] = useState(false);
   const [objectInteractionText, setObjectInteractionText] = useState('');
   const [interactedObjectName, setInteractedObjectName] = useState('');
+  const [interactedObjectCharacterImage, setInteractedObjectCharacterImage] = useState<string | undefined>();
   
   // Refs to track dialogue states for Phaser to access current values
   const showDialogueRef = useRef(false);
@@ -224,6 +226,7 @@ export function BaseGameScreen({
         obj.setInteractive();
         obj.setData('name', objConfig.name);
         obj.setData('interaction', objConfig.interaction || 'Nothing special here.');
+        obj.setData('characterImage', objConfig.characterImage);
         obj.setDepth(objConfig.y);
 
         // Apply custom scale if provided, otherwise use default (2 for images, 1 for default texture)
@@ -396,8 +399,10 @@ export function BaseGameScreen({
             setShowDialogue(true);
           } else {
             const interactionText = nearestInteractive.getData('interaction');
+            const characterImage = nearestInteractive.getData('characterImage');
             setInteractedObjectName(objName);
             setObjectInteractionText(interactionText);
+            setInteractedObjectCharacterImage(characterImage);
             setShowObjectInteraction(true);
           }
         }
@@ -421,8 +426,10 @@ export function BaseGameScreen({
             setShowDialogue(true);
           } else {
             const interactionText = nearestInteractive.getData('interaction');
+            const characterImage = nearestInteractive.getData('characterImage');
             setInteractedObjectName(objName);
             setObjectInteractionText(interactionText);
+            setInteractedObjectCharacterImage(characterImage);
             setShowObjectInteraction(true);
           }
         }
@@ -460,6 +467,16 @@ export function BaseGameScreen({
 
         const body = player.body as Phaser.Physics.Arcade.Body;
         body.setVelocity(velocityX, velocityY);
+
+        // Handle walking sound effects
+        if (velocityX !== 0 || velocityY !== 0) {
+          // Player is moving - start walking sounds
+          const speed = Math.sqrt(velocityX * velocityX + velocityY * velocityY);
+          walkingSoundManager.startWalking(speed);
+        } else {
+          // Player stopped moving - stop walking sounds
+          walkingSoundManager.stopWalking();
+        }
 
         // Update sprite animation based on movement direction
         if (velocityX !== 0 || velocityY !== 0) {
@@ -501,6 +518,8 @@ export function BaseGameScreen({
         body.setVelocity(0, 0);
         player.setFrame(0);
         player.setScale(4.0);
+        // Stop walking sounds when in dialogue mode
+        walkingSoundManager.stopWalking();
       }
 
       // Check distance to NPC and objects
@@ -548,6 +567,8 @@ export function BaseGameScreen({
       if (showDialogue || showObjectInteraction) {
         const body = player.body as Phaser.Physics.Arcade.Body;
         body.setVelocity(0, 0);
+        // Also stop walking sounds when movement is stopped
+        walkingSoundManager.stopWalking();
       }
     }
 
@@ -557,6 +578,8 @@ export function BaseGameScreen({
     return () => {
       game.destroy(true);
       phaserGameRef.current = null;
+      // Stop walking sounds when component unmounts
+      walkingSoundManager.stopWalking();
     };
   }, [question.animation, currentQuestion, sceneConfig]);
 
@@ -568,6 +591,8 @@ export function BaseGameScreen({
   useEffect(() => {
     showObjectInteractionRef.current = showObjectInteraction;
   }, [showObjectInteraction]);
+
+
 
   // ESC key handler at React level (has access to current state)
   useEffect(() => {
@@ -642,38 +667,57 @@ export function BaseGameScreen({
 
       {/* Object Interaction Overlay */}
       {showObjectInteraction && (
-        <div className="absolute inset-0 z-40 flex items-end justify-center pb-8">
-          <div className="w-full max-w-4xl px-6">
-            <div className="bg-gradient-to-br from-gray-900 to-gray-800 border-4 border-cyan-500 rounded-2xl shadow-2xl p-8 backdrop-blur-md">
-              <div className="flex items-start gap-4 mb-6">
-                <div className="bg-cyan-500 rounded-full p-3 flex-shrink-0">
-                  <span className="text-2xl">🔍</span>
-                </div>
-                <div className="flex-1">
-                  <div className="flex items-center justify-between mb-2">
-                    <h3 className="text-2xl font-bold text-cyan-400">{interactedObjectName}</h3>
-                    {voiceId && (
-                      <TextToSpeech
-                        text={objectInteractionText}
-                        voiceId={voiceId}
-                        className="ml-2"
-                      />
-                    )}
+        <>
+          {interactedObjectCharacterImage ? (
+            // Character interaction using visual novel style DialogueBox
+            <div className="w-full max-w-5xl px-6">
+              <DialogueBox
+                npcName={interactedObjectName}
+                scenario={objectInteractionText}
+                options={[
+                  { text: 'Continue', key: 'A' as const }
+                ]}
+                onSelect={() => setShowObjectInteraction(false)}
+                voiceId={voiceId}
+                characterImage={interactedObjectCharacterImage}
+              />
+            </div>
+          ) : (
+            // Regular object interaction using existing UI
+            <div className="absolute inset-0 z-40 flex items-end justify-center pb-8">
+              <div className="w-full max-w-4xl px-6">
+                <div className="bg-gradient-to-br from-gray-900 to-gray-800 border-4 border-cyan-500 rounded-2xl shadow-2xl p-8 backdrop-blur-md">
+                  <div className="flex items-start gap-4 mb-6">
+                    <div className="bg-cyan-500 rounded-full p-3 flex-shrink-0">
+                      <span className="text-2xl">🔍</span>
+                    </div>
+                    <div className="flex-1">
+                      <div className="flex items-center justify-between mb-2">
+                        <h3 className="text-2xl font-bold text-cyan-400">{interactedObjectName}</h3>
+                        {voiceId && (
+                          <TextToSpeech
+                            text={objectInteractionText}
+                            voiceId={voiceId}
+                            className="ml-2"
+                          />
+                        )}
+                      </div>
+                      <p className="text-white text-lg leading-relaxed">{objectInteractionText}</p>
+                    </div>
                   </div>
-                  <p className="text-white text-lg leading-relaxed">{objectInteractionText}</p>
+                  <div className="flex justify-end">
+                    <button
+                      onClick={() => setShowObjectInteraction(false)}
+                      className="bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-600 hover:to-blue-700 text-white font-bold py-3 px-8 rounded-xl transition-all duration-300 transform hover:scale-105 shadow-lg"
+                    >
+                      Close
+                    </button>
+                  </div>
                 </div>
-              </div>
-              <div className="flex justify-end">
-                <button
-                  onClick={() => setShowObjectInteraction(false)}
-                  className="bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-600 hover:to-blue-700 text-white font-bold py-3 px-8 rounded-xl transition-all duration-300 transform hover:scale-105 shadow-lg"
-                >
-                  Close
-                </button>
               </div>
             </div>
-          </div>
-        </div>
+          )}
+        </>
       )}
 
       {/* Dialogue Overlay */}
@@ -689,6 +733,7 @@ export function BaseGameScreen({
               ]}
               onSelect={handleDialogueChoice}
               voiceId={voiceId}
+              characterImage={sceneConfig.characterImage}
             />
           </div>
         </div>

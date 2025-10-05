@@ -11,5 +11,11 @@ interface OfficeGameScreenProps {
 }
 
 export function OfficeGameScreen(props: OfficeGameScreenProps) {
-  return <BaseGameScreen {...props} sceneConfig={officeSceneConfig} />;
+  // Ensure characterImage is set for boss character in office scene
+  const configWithCharacterImage = {
+    ...officeSceneConfig,
+    characterImage: '/assets/characters/boss.png'
+  };
+  
+  return <BaseGameScreen {...props} sceneConfig={configWithCharacterImage} />;
 }

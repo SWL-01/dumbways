@@ -8,6 +8,7 @@ export interface GameObject {
   scale?: number; // Scale multiplier for the object sprite (default: 2 for images, 1 for default)
   removeWhiteBackground?: boolean; // Attempt to remove white/light backgrounds (experimental)
   alpha?: number; // Opacity: 0 = invisible, 1 = fully visible (default: 1)
+  characterImage?: string; // Character portrait for dialogue interactions (if this object represents a character)
 }
 
 // Player configuration
@@ -42,6 +43,7 @@ export interface SceneConfig {
   npcPosition: { x: number; y: number };
   npcImage?: string; // Custom NPC sprite image path
   npcScale?: number; // Scale for NPC sprite (default: 0.15 for custom images)
+  characterImage?: string; // Character portrait for dialogue (visual novel style)
   objects: GameObject[];
   playerConfig?: Partial<PlayerConfig>;
 }
