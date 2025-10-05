@@ -7,7 +7,6 @@ import { mbtiQuestions } from './data/questions';
 import { personalityTypes } from './data/personalities';
 import { MBTIScores } from './types/mbti';
 import { calculateMBTIType, generateSessionId } from './utils/mbtiCalculator';
-import { supabase } from './lib/supabase';
 
 type Screen = 'start' | 'question' | 'questionLoading' | 'results';
 
@@ -83,15 +82,8 @@ function App() {
   };
 
   const saveResults = async (type: string, finalScores: MBTIScores) => {
-    try {
-      await supabase.from('mbti_results').insert({
-        personality_type: type,
-        scores: finalScores,
-        session_id: sessionId,
-      });
-    } catch (error) {
-      console.error('Error saving results:', error);
-    }
+    // Database saving removed - not needed
+    console.log('Results:', { type, finalScores, sessionId });
   };
 
   const handleRestart = () => {
