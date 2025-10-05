@@ -2,13 +2,14 @@ import { useState, useEffect } from 'react';
 import { StartScreen } from './components/StartScreen';
 import { GameScreen } from './components/GameScreen';
 import { ResultsScreen } from './components/ResultsScreen';
+import { LoadingScreen } from './components/LoadingScreen';
 import { mbtiQuestions } from './data/questions';
 import { personalityTypes } from './data/personalities';
 import { MBTIScores } from './types/mbti';
 import { calculateMBTIType, generateSessionId } from './utils/mbtiCalculator';
 import { supabase } from './lib/supabase';
 
-type Screen = 'start' | 'question' | 'results';
+type Screen = 'start' | 'question' | 'questionLoading' | 'results';
 
 function App() {
   const [screen, setScreen] = useState<Screen>('start');
@@ -30,6 +31,19 @@ function App() {
     setSessionId(generateSessionId());
   }, []);
 
+  // Handle loading screen transitions
+  useEffect(() => {
+    if (screen === 'questionLoading') {
+      const timer = setTimeout(() => {
+        setCurrentQuestionIndex(currentQuestionIndex + 1);
+        setScreen('question');
+      }, 2000); // 2 second loading screen
+
+      return () => clearTimeout(timer);
+    }
+  }, [screen, currentQuestionIndex]);
+
+  const handleStart = () => {
   const handleStart = (age: number) => {
     console.log('User age:', age); // TODO: Store age for AI analysis
     setScreen('question');
@@ -54,7 +68,8 @@ function App() {
     setScores(newScores);
 
     if (currentQuestionIndex < mbtiQuestions.length - 1) {
-      setCurrentQuestionIndex(currentQuestionIndex + 1);
+      // Show loading screen before next question
+      setScreen('questionLoading');
     } else {
       const type = calculateMBTIType(newScores);
       setPersonalityType(type);
@@ -104,6 +119,13 @@ function App() {
           currentQuestion={currentQuestionIndex + 1}
           totalQuestions={mbtiQuestions.length}
           onAnswer={handleAnswer}
+        />
+      )}
+
+      {screen === 'questionLoading' && (
+        <LoadingScreen
+          currentQuestion={currentQuestionIndex + 1}
+          totalQuestions={mbtiQuestions.length}
         />
       )}
 
