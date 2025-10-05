@@ -2,14 +2,16 @@ import { Award, TrendingUp, Briefcase, Share2 } from 'lucide-react';
 import { PersonalityType } from '../types/mbti';
 import { getPercentages } from '../utils/mbtiCalculator';
 import { MBTIScores } from '../types/mbti';
+import { TextToSpeech } from './TextToSpeech';
 
 interface ResultsScreenProps {
   personality: PersonalityType;
   scores: MBTIScores;
   onRestart: () => void;
+  voiceId?: string;
 }
 
-export function ResultsScreen({ personality, scores, onRestart }: ResultsScreenProps) {
+export function ResultsScreen({ personality, scores, onRestart, voiceId }: ResultsScreenProps) {
   const percentages = getPercentages(scores);
   const type = personality.type;
 
@@ -48,9 +50,17 @@ export function ResultsScreen({ personality, scores, onRestart }: ResultsScreenP
         </div>
 
         <div className="bg-white rounded-3xl shadow-2xl p-8 md:p-12 mb-8 animate-slideIn">
-          <div className="flex items-center gap-3 mb-6">
-            <Award className="w-8 h-8 text-purple-600" />
-            <h3 className="text-2xl font-bold text-gray-800">Your Personality</h3>
+          <div className="flex items-center justify-between mb-6">
+            <div className="flex items-center gap-3">
+              <Award className="w-8 h-8 text-purple-600" />
+              <h3 className="text-2xl font-bold text-gray-800">Your Personality</h3>
+            </div>
+            {voiceId && (
+              <TextToSpeech
+                text={`You are ${personality.title}. ${personality.description}`}
+                voiceId={voiceId}
+              />
+            )}
           </div>
 
           <p className="text-lg text-gray-700 leading-relaxed mb-8">

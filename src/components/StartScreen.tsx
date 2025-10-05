@@ -1,9 +1,14 @@
 
+import { TextToSpeech } from './TextToSpeech';
+import { VoiceSelector } from './VoiceSelector';
+
 interface StartScreenProps {
   onStart: () => void;
+  selectedVoiceId: string;
+  onVoiceSelect: (voiceId: string) => void;
 }
 
-export function StartScreen({ onStart }: StartScreenProps) {
+export function StartScreen({ onStart, selectedVoiceId, onVoiceSelect }: StartScreenProps) {
   return (
     <div className="min-h-screen flex items-center justify-center p-4 relative overflow-hidden">
       {/* Background Image */}
@@ -18,6 +23,18 @@ export function StartScreen({ onStart }: StartScreenProps) {
       {/* Gradient Overlay */}
       <div className="absolute inset-0 bg-black/30" />
 
+      {/* Voice Selector - Top Right */}
+      <div className="absolute top-4 right-4 z-20">
+        <div className="text-right mb-2">
+          <span className="text-white/80 text-sm font-medium">Voice Guide</span>
+        </div>
+        <VoiceSelector
+          selectedVoiceId={selectedVoiceId}
+          onVoiceSelect={onVoiceSelect}
+          className="w-64"
+        />
+      </div>
+
       {/* Content */}
       <div className="max-w-2xl w-full text-center animate-fadeIn relative z-10">
 
@@ -25,9 +42,16 @@ export function StartScreen({ onStart }: StartScreenProps) {
           PathQuest
         </h1>
 
-        <p className="text-xl md:text-2xl text-white mb-12 drop-shadow">
-          Answer 12 scenarios to discover your unique personality type!
-        </p>
+        <div className="flex items-center justify-center gap-4 mb-12">
+          <p className="text-xl md:text-2xl text-white drop-shadow">
+            Answer 12 scenarios to discover your unique personality type!
+          </p>
+          <TextToSpeech 
+            text="Answer 12 scenarios to discover your unique personality type!"
+            voiceId={selectedVoiceId}
+            className="ml-2"
+          />
+        </div>
 
         <button
           onClick={onStart}
